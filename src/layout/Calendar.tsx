@@ -1,6 +1,3 @@
-import { db } from "../firebase";
-import { collection, doc, getDoc, getDocs } from "firebase/firestore";
-
 import { useEffect, useState } from "react";
 import { fetchCollection } from "../utils/firestore";
 

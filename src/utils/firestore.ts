@@ -1,6 +1,6 @@
 // src/utils/firestore.ts
 import { db } from "../firebase";
-import { collection, getDocs, query, where, QueryConstraint, addDoc, setDoc, doc } from "firebase/firestore";
+import { collection, getDocs, query, QueryConstraint, addDoc, setDoc, doc } from "firebase/firestore";
 
 export async function fetchCollection(collectionName: string, constraints: QueryConstraint[] = []): Promise<any[]> {
   try {

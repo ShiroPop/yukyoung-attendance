@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { addDocument, fetchCollection } from "../utils/firestore";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 
 interface Inputs {
   semester: string;
