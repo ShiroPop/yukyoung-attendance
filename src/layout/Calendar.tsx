@@ -1,10 +1,68 @@
 import { useEffect, useState } from "react";
 import { fetchCollection } from "../utils/firestore";
+import styled from "styled-components";
 
 interface date {
   day: number;
   currentMonth: boolean;
 }
+
+const CalendarTable = styled.table`
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+`;
+
+const TablePadding = styled.td`
+  text-align: center;
+  padding: 8px;
+`;
+
+const DateInput = styled.input.attrs({ type: "radio" })`
+  display: none;
+`;
+
+const Label = styled.label`
+  display: inline-block;
+  border-radius: 50%;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 120%;
+  color: #000;
+  cursor: pointer;
+
+  div {
+    transition: background-color 0.5s, color 0.2s;
+    border-radius: 50%;
+  }
+
+  input:checked + div {
+    background-color: #76c078;
+    color: #fff;
+  }
+
+  div:hover {
+    background-color: #76c0784d;
+  }
+`;
+
+const Cell = styled.div<{ isCurrent: boolean }>`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+  color: ${({ isCurrent }) => (isCurrent ? "#000" : "#CECECE")};
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 120%;
+  cursor: default;
+  width: 44px;
+  height: 44px;
+  border-radius: 99px;
+`;
+
+const Input = styled.div``;
 
 const Calendar = () => {
   const [year, setYear] = useState(new Date().getFullYear());
@@ -70,35 +128,37 @@ const Calendar = () => {
       <div>{year}년</div>
       <div>{month + 1}월</div>
       <div onClick={() => handleMonth(true)}>next</div>
-      <table>
+      <CalendarTable>
         <thead>
-          {weekDays.map((ele) => (
-            <th>{ele}</th>
-          ))}
+          <tr>
+            {weekDays.map((ele) => (
+              <th>{ele}</th>
+            ))}
+          </tr>
         </thead>
         <tbody>
           {dateArray.map((week, i) => (
             <tr key={i}>
               {week.map((cell, idx) => (
-                <td key={idx}>
+                <TablePadding key={`${i}` + idx}>
                   {cell.currentMonth ? (
-                    <label>
-                      <input
+                    <Label>
+                      <DateInput
                         type="radio"
                         name="date"
-                        value={new Date(year, month, cell.day).toISOString().substring(0, 10)}
+                        value={new Date(year, month, cell.day + 1).toISOString().substring(0, 10)}
                       />
-                      {cell.day}
-                    </label>
+                      <Cell isCurrent={cell.currentMonth}>{cell.day}</Cell>
+                    </Label>
                   ) : (
-                    <div> {cell.day}</div>
+                    <Cell isCurrent={cell.currentMonth}>{cell.day}</Cell>
                   )}
-                </td>
+                </TablePadding>
               ))}
             </tr>
           ))}
         </tbody>
-      </table>
+      </CalendarTable>
     </>
   );
 };
