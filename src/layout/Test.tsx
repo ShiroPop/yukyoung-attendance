@@ -31,7 +31,6 @@ const Test = () => {
   };
 
   const { handleSubmit, register } = useForm<Inputs>();
-  const onSubmit: SubmitHandler<Inputs> = (data) => console.log(data);
 
   const handleAttendance = async (data: Inputs) => {
     const docId = data.semester + data.class + new Date().toLocaleDateString();
