@@ -20,15 +20,15 @@ const Test = () => {
     });
   }, []);
 
-  const handleAddClass = async () => {
-    const newData = {
-      start_date: new Date(),
-      end_date: new Date(),
-    };
+  // const handleAddClass = async () => {
+  //   const newData = {
+  //     start_date: new Date(),
+  //     end_date: new Date(),
+  //   };
 
-    const docId = await addDocument("semester", newData);
-    console.log("추가된 문서 ID:", docId);
-  };
+  //   const docId = await addDocument("semester", newData);
+  //   console.log("추가된 문서 ID:", docId);
+  // };
 
   const { handleSubmit, register } = useForm<Inputs>();
 
