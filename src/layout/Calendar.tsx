@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { fetchCollection } from "../utils/firestore";
 import styled from "styled-components";
+import { useAttendanceDatesStore } from "../store/attendanceDatesStore";
+import { useDateStore } from "../store/dateStore";
+import { usePopupStore } from "../store/popupStore";
 
 interface date {
   day: number;
@@ -10,7 +13,7 @@ interface date {
 const CalendarTable = styled.table`
   width: 100%;
   max-width: 600px;
-  margin: 0 auto;
+  margin: 4px auto 12px auto;
   border-collapse: collapse;
   table-layout: fixed;
 `;
@@ -34,7 +37,7 @@ const DateInput = styled.input.attrs({ type: "radio" })`
   display: none;
 `;
 
-const Label = styled.label`
+const Label = styled.label<{ hasData?: boolean }>`
   display: inline-block;
   border-radius: 50%;
   text-align: center;
@@ -45,6 +48,7 @@ const Label = styled.label`
   cursor: pointer;
 
   div {
+    background-color: ${({ hasData }) => (hasData ? "" : "#E2E2E2")};
     transition: background-color 0.5s, color 0.2s;
     border-radius: 50%;
   }
@@ -63,7 +67,7 @@ const Cell = styled.div<{ isCurrent: boolean }>`
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 0 auto;
+  margin: 4px auto;
   color: ${({ isCurrent }) => (isCurrent ? "#000" : "#CECECE")};
   font-size: 18px;
   font-weight: 400;
@@ -83,9 +87,12 @@ const Cell = styled.div<{ isCurrent: boolean }>`
 //
 
 const Calendar = () => {
+  const { dates } = useAttendanceDatesStore();
+  const { date, setDate } = useDateStore();
+  const { openPopup } = usePopupStore();
+
   const [year, setYear] = useState(new Date().getFullYear());
   const [month, setMonth] = useState(new Date().getMonth());
-  // const [dateArray, setDateArray] = useState<Array<Array<date>>>([]);
 
   const weekDays = ["일", "월", "화", "수", "목", "금", "토"];
 
@@ -122,6 +129,13 @@ const Calendar = () => {
     return weeks;
   }, [year, month]);
 
+  const hasAttendance = (day: number): boolean => {
+    const paddedMonth = String(month + 1).padStart(2, "0");
+    const paddedDay = String(day).padStart(2, "0");
+    const dateStr = `${year}-${paddedMonth}-${paddedDay}`;
+    return dates.some((d) => d.id === dateStr);
+  };
+
   const handleMonth = (next: boolean) => {
     if (next) {
       if (month === 11) {
@@ -137,6 +151,14 @@ const Calendar = () => {
       } else {
         setMonth((prev) => prev - 1);
       }
+    }
+  };
+
+  const handleDateClick = (dateStr: string) => {
+    if (date === dateStr) {
+      openPopup();
+    } else {
+      setDate(dateStr);
     }
   };
 
@@ -162,11 +184,14 @@ const Calendar = () => {
               {week.map((cell, idx) => (
                 <TablePadding key={`${i}` + idx}>
                   {cell.currentMonth ? (
-                    <Label>
+                    <Label hasData={cell.currentMonth && hasAttendance(cell.day)}>
                       <DateInput
                         type="radio"
                         name="date"
                         value={new Date(year, month, cell.day + 1).toISOString().substring(0, 10)}
+                        onClick={() => {
+                          handleDateClick(new Date(year, month, cell.day + 1).toISOString().substring(0, 10));
+                        }}
                       />
                       <Cell isCurrent={cell.currentMonth}>{cell.day}</Cell>
                     </Label>

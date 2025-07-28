@@ -2,9 +2,12 @@
 import { db } from "../firebase";
 import { collection, getDocs, query, QueryConstraint, addDoc, setDoc, doc } from "firebase/firestore";
 
-export async function fetchCollection(collectionName: string, constraints: QueryConstraint[] = []): Promise<any[]> {
+export async function fetchCollection(
+  pathSegments: [string, ...string[]],
+  constraints: QueryConstraint[] = []
+): Promise<any[]> {
   try {
-    const ref = collection(db, collectionName);
+    const ref = collection(db, ...pathSegments);
     const q = constraints.length > 0 ? query(ref, ...constraints) : ref;
     const snapshot = await getDocs(q);
 
@@ -13,7 +16,7 @@ export async function fetchCollection(collectionName: string, constraints: Query
 
     return result;
   } catch (error) {
-    console.error(`Firestore 에러 [${collectionName}]:`, error);
+    console.error(`Firestore 에러 [${pathSegments.join("/")}]`, error);
     return [];
   }
 }
@@ -29,7 +32,7 @@ export async function addDocument(collectionName: string, data: any, docId?: str
       return docRef.id;
     }
   } catch (error) {
-    console.error(`Error writing document to "${collectionName}"`, error);
+    console.error(`Firestore 에러 [${collectionName}]:`, error);
     throw error;
   }
 }

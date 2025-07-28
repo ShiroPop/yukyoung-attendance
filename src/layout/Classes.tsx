@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { fetchCollection } from "../utils/firestore";
 import { useClassesStore } from "../store/classesStore";
 import styled from "styled-components";
+import { getClassStudentsAttendance } from "../utils/getClassStudentsAttendance";
+import { useSemesterStore } from "../store/semesterStore";
 
 interface ClassesType {
   id: string;
@@ -13,7 +15,8 @@ const ScrollContainer = styled.div`
   display: flex;
   overflow-x: auto;
   white-space: nowrap;
-  padding: 0.5rem;
+  padding: 12px 8px;
+  border-top: 1px solid #00000030;
   background-color: #fff;
   cursor: grab;
 
@@ -54,8 +57,14 @@ const ClassInput = styled.input`
   display: none;
 `;
 
+//
+// 달력 max width가 정해지면 이쪽도 maxwidth...
+// hover -> 모바일에서는 클릭시 작동하는 이슈
+//
+
 const Classes = () => {
-  const { classes, setClasses, setClassType } = useClassesStore();
+  const { classes, setClasses, setClassId } = useClassesStore();
+  const { semester } = useSemesterStore();
 
   const [selectedClass, setSelectedClass] = useState("전체");
 
@@ -90,10 +99,9 @@ const Classes = () => {
   };
 
   useEffect(() => {
-    fetchCollection("class").then((data) => {
-      setClasses(data);
-    });
-  }, []);
+    if (!semester) return;
+    fetchCollection(["semester", semester, "class"]).then(setClasses);
+  }, [semester]);
 
   return (
     <>
@@ -105,20 +113,27 @@ const Classes = () => {
         onMouseMove={handleMouseMove}
       >
         <ClassLabel selected={selectedClass === "전체"}>
-          <ClassInput type="radio" name="class" onChange={() => setSelectedClass("전체")} />
+          <ClassInput
+            type="radio"
+            name="class"
+            onChange={() => {
+              setSelectedClass("전체");
+              setClassId({ id: "전체" });
+            }}
+          />
           <AntiDrag>전체</AntiDrag>
         </ClassLabel>
         {classes?.map((ele) => (
-          <ClassLabel selected={selectedClass === ele.name}>
+          <ClassLabel selected={selectedClass === ele.id}>
             <ClassInput
               type="radio"
               name="class"
               onChange={() => {
-                setSelectedClass(ele.name);
-                setClassType(ele);
+                setSelectedClass(ele.id);
+                setClassId(ele);
               }}
             />
-            <AntiDrag>{ele.name}</AntiDrag>
+            <AntiDrag>{ele.id}</AntiDrag>
           </ClassLabel>
         ))}
       </ScrollContainer>
