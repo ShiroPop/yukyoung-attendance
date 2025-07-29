@@ -2,12 +2,26 @@ import { useMemo, useState } from "react";
 import styled from "styled-components";
 import { useDateStore } from "../store/dateStore";
 import { usePopupStore } from "../store/popupStore";
-import { useAttendanceDatesQuery } from "../api/useQuery";
+import { useAttendanceDatesQuery, useHolidayQuery } from "../api/useQuery";
 
-interface date {
-  day: number;
-  currentMonth: boolean;
-}
+const CalendarTop = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  color: #76c078;
+  border-top: 1px solid #00000030;
+  border-bottom: 1px solid #00000030;
+  margin: 0 0 10px 0;
+  cursor: pointer;
+`;
+
+const CalendarTopFont = styled.div`
+  font-size: 20px;
+  font-weight: 700;
+  margin: 8px 0;
+  cursor: default;
+`;
 
 const CalendarTable = styled.table`
   width: 100%;
@@ -36,7 +50,7 @@ const DateInput = styled.input.attrs({ type: "radio" })`
   display: none;
 `;
 
-const Label = styled.label<{ hasData?: boolean }>`
+const Label = styled.label<{ $hasData?: string }>`
   display: inline-block;
   border-radius: 50%;
   text-align: center;
@@ -47,7 +61,7 @@ const Label = styled.label<{ hasData?: boolean }>`
   cursor: pointer;
 
   div {
-    background-color: ${({ hasData }) => (hasData ? "" : "#E2E2E2")};
+    background-color: ${({ $hasData }) => $hasData};
     transition: background-color 0.5s, color 0.2s;
     border-radius: 50%;
   }
@@ -78,15 +92,12 @@ const Cell = styled.div<{ $isCurrent: boolean }>`
 `;
 
 //
-// firebase db 조인해서 가져오기
 // 클래스 바 구현 후, join한 date 값을 가지고 cell css 수정하기
-// 최종적으로 나온 cell 디자인을 보고 table min width 주기 (원이 겹치지 않는 사이즈)
-// 데이터 캐싱 관련해서 react query 고민해보기
-// 달력함수 useMemo 고려해보기
 //
 
 const Calendar = () => {
   const { data: attendanceDates } = useAttendanceDatesQuery();
+  const { data: holidayDates } = useHolidayQuery();
   const { date, setDate } = useDateStore();
   const { openPopup } = usePopupStore();
 
@@ -128,11 +139,17 @@ const Calendar = () => {
     return weeks;
   }, [year, month]);
 
-  const hasAttendance = (day: number): boolean => {
+  const getAttendanceColor = (day: number): string => {
     const paddedMonth = String(month + 1).padStart(2, "0");
     const paddedDay = String(day).padStart(2, "0");
     const dateStr = `${year}-${paddedMonth}-${paddedDay}`;
-    return attendanceDates?.some((d) => d.id === dateStr) ?? false;
+
+    const isAttendance = attendanceDates?.some((d) => d.id === dateStr) ?? false;
+    const isHoliday = holidayDates?.some((d) => d.id === dateStr) ?? false;
+
+    if (isAttendance) return "none";
+    if (isHoliday) return "#FFA4A4";
+    return "#E2E2E2";
   };
 
   const handleMonth = (next: boolean) => {
@@ -163,10 +180,12 @@ const Calendar = () => {
 
   return (
     <>
-      <div onClick={() => handleMonth(false)}>pre</div>
-      <div>{year}년</div>
-      <div>{month + 1}월</div>
-      <div onClick={() => handleMonth(true)}>next</div>
+      <CalendarTop>
+        <div onClick={() => handleMonth(false)}>◀</div>
+        <CalendarTopFont>{year}년</CalendarTopFont>
+        <CalendarTopFont>{month + 1}월</CalendarTopFont>
+        <div onClick={() => handleMonth(true)}>▶</div>
+      </CalendarTop>
       <CalendarTable>
         <thead>
           <tr>
@@ -183,7 +202,7 @@ const Calendar = () => {
               {week.map((cell, idx) => (
                 <TablePadding key={`${i}` + idx}>
                   {cell.currentMonth ? (
-                    <Label hasData={cell.currentMonth && hasAttendance(cell.day)}>
+                    <Label $hasData={cell.currentMonth && getAttendanceColor(cell.day)}>
                       <DateInput
                         type="radio"
                         name="date"
