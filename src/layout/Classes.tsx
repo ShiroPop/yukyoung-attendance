@@ -126,7 +126,7 @@ const Classes = () => {
           <AntiDrag>전체</AntiDrag>
         </ClassLabel>
         {classes?.map((ele) => (
-          <ClassLabel selected={selectedClass === ele.id}>
+          <ClassLabel key={ele.id} selected={selectedClass === ele.id}>
             <ClassInput
               type="radio"
               name="class"

@@ -78,7 +78,7 @@ const ChildList = () => {
       </Head>
       <ListWrapper>
         {student.map((ele) => (
-          <Children>
+          <Children key={ele.id}>
             <Name isBody={true}>{ele.name}</Name>
             <AttendanceBox>
               <Attendance color="#76c078">{ele.monday}</Attendance>
