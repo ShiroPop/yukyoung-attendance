@@ -34,8 +34,10 @@ const ClassLabel = styled.label<{ selected: boolean }>`
   white-space: nowrap;
   transition: background-color 0.5s, color 0.2s;
 
-  &:hover {
-    background-color: #76c0784d;
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background-color: #76c0784d;
+    }
   }
 `;
 
