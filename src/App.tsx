@@ -4,7 +4,6 @@ import Calendar from "./layout/Calendar";
 import ChildList from "./layout/ChildList";
 import Classes from "./layout/Classes";
 import Popup from "./layout/Popup";
-import Test from "./layout/Test";
 
 const queryClient = new QueryClient();
 
@@ -15,7 +14,6 @@ function App() {
         <Calendar />
         <Classes />
         <ChildList />
-        <Test />
         <Popup />
       </div>
     </QueryClientProvider>
