@@ -3,6 +3,13 @@ import { fetchCollection } from "../utils/firestore";
 import { useDateStore } from "../store/dateStore";
 import { useSemesterStore } from "../store/semesterStore";
 
+export const useHolidayQuery = () => {
+  return useQuery({
+    queryKey: ["holiday"],
+    queryFn: () => fetchCollection(["holiday"]),
+  });
+};
+
 export const useAttendanceQuery = () => {
   const { semester } = useSemesterStore();
   const { date } = useDateStore();
