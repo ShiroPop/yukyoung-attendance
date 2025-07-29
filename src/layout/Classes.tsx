@@ -4,12 +4,6 @@ import { useClassesStore } from "../store/classesStore";
 import styled from "styled-components";
 import { useSemesterStore } from "../store/semesterStore";
 
-interface ClassesType {
-  id: string;
-  semester_id: string;
-  name: string;
-}
-
 const ScrollContainer = styled.div`
   display: flex;
   overflow-x: auto;

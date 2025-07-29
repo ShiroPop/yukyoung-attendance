@@ -1,7 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
-import { fetchCollection } from "../utils/firestore";
+import { useMemo, useState } from "react";
 import styled from "styled-components";
-import { useAttendanceDatesStore } from "../store/attendanceDatesStore";
 import { useDateStore } from "../store/dateStore";
 import { usePopupStore } from "../store/popupStore";
 import { useAttendanceDatesQuery } from "../api/useQuery";
@@ -64,12 +62,12 @@ const Label = styled.label<{ hasData?: boolean }>`
   }
 `;
 
-const Cell = styled.div<{ isCurrent: boolean }>`
+const Cell = styled.div<{ $isCurrent: boolean }>`
   display: flex;
   justify-content: center;
   align-items: center;
   margin: 4px auto;
-  color: ${({ isCurrent }) => (isCurrent ? "#000" : "#CECECE")};
+  color: ${({ $isCurrent }) => ($isCurrent ? "#000" : "#CECECE")};
   font-size: 18px;
   font-weight: 400;
   line-height: 120%;
@@ -194,10 +192,10 @@ const Calendar = () => {
                           handleDateClick(new Date(year, month, cell.day + 1).toISOString().substring(0, 10));
                         }}
                       />
-                      <Cell isCurrent={cell.currentMonth}>{cell.day}</Cell>
+                      <Cell $isCurrent={cell.currentMonth}>{cell.day}</Cell>
                     </Label>
                   ) : (
-                    <Cell isCurrent={cell.currentMonth}>{cell.day}</Cell>
+                    <Cell $isCurrent={cell.currentMonth}>{cell.day}</Cell>
                   )}
                 </TablePadding>
               ))}

@@ -2,23 +2,6 @@ import styled from "styled-components";
 import { useClassesStore } from "../store/classesStore";
 import { useClassStudentsAttendance } from "../hooks/useClassStudentsAttendance";
 
-type Student = {
-  id: string;
-  name: string;
-  classId: string;
-  state?: number;
-};
-
-type AttendanceByDay = {
-  monday?: number;
-  tuesday?: number;
-  wednesday?: number;
-  thursday?: number;
-  friday?: number;
-};
-
-type StudentAttendanceInfo = Student & AttendanceByDay;
-
 const Head = styled.div`
   display: grid;
   justify-items: center;
