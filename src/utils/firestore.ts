@@ -1,6 +1,14 @@
 // src/utils/firestore.ts
+import { useQuery } from "@tanstack/react-query";
 import { db } from "../firebase";
-import { collection, getDocs, query, QueryConstraint, addDoc, setDoc, doc } from "firebase/firestore";
+import { collection, getDocs, query, QueryConstraint, addDoc, setDoc, doc, serverTimestamp } from "firebase/firestore";
+
+export const useCollectionQuery = (pathSegments: [string, ...string[]], constraints: QueryConstraint[] = []) => {
+  return useQuery({
+    queryKey: ["collection", ...pathSegments, ...constraints.map(String)],
+    queryFn: () => fetchCollection(pathSegments, constraints),
+  });
+};
 
 export async function fetchCollection(
   pathSegments: [string, ...string[]],
@@ -23,12 +31,17 @@ export async function fetchCollection(
 
 export async function addDocument(collectionName: string, data: any, docId?: string): Promise<string> {
   try {
+    const newData = {
+      ...data,
+      createdAt: serverTimestamp(),
+      dummy: true,
+    };
     if (docId) {
       const docRef = doc(db, collectionName, docId);
-      await setDoc(docRef, data);
+      await setDoc(docRef, newData);
       return docRef.id;
     } else {
-      const docRef = await addDoc(collection(db, collectionName), data);
+      const docRef = await addDoc(collection(db, collectionName), newData);
       return docRef.id;
     }
   } catch (error) {

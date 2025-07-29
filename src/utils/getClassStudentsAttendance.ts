@@ -9,23 +9,46 @@ export type Student = {
   state?: number;
 };
 
-type AttendanceSummary = {
-  attendCount: number;
-  absentCount: number;
-  total: number;
+type WeeklyAttendanceSummary = {
+  monday: number;
+  tuesday: number;
+  wednesday: number;
+  thursday: number;
+  friday: number;
 };
 
-type StudentAttendanceInfo = Student & AttendanceSummary;
+type StudentAttendanceInfo = Student & WeeklyAttendanceSummary;
+
+function getWeekdayName(dateString: string): keyof WeeklyAttendanceSummary | null {
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return null;
+
+  const day = date.getDay(); // 0(Sun) ~ 6(Sat)
+
+  switch (day) {
+    case 1:
+      return "monday";
+    case 2:
+      return "tuesday";
+    case 3:
+      return "wednesday";
+    case 4:
+      return "thursday";
+    case 5:
+      return "friday";
+    default:
+      return null; // 주말은 무시
+  }
+}
 
 export async function getClassStudentsAttendance(
   semesterId: string,
   classId: string
 ): Promise<StudentAttendanceInfo[]> {
   const { setStudents } = useStudentsStore.getState();
-  const { setDates } = useAttendanceDatesStore.getState();
+  const { setAttendanceDates } = useAttendanceDatesStore.getState();
 
   const studentMap = new Map<string, StudentAttendanceInfo>();
-
   const allStudents: Student[] = [];
 
   // 1. 학생 목록 가져오기
@@ -44,9 +67,11 @@ export async function getClassStudentsAttendance(
         };
         studentMap.set(stu.id, {
           ...student,
-          attendCount: 0,
-          absentCount: 0,
-          total: 0,
+          monday: 0,
+          tuesday: 0,
+          wednesday: 0,
+          thursday: 0,
+          friday: 0,
         });
         allStudents.push(student);
       });
@@ -62,9 +87,11 @@ export async function getClassStudentsAttendance(
       };
       studentMap.set(stu.id, {
         ...student,
-        attendCount: 0,
-        absentCount: 0,
-        total: 0,
+        monday: 0,
+        tuesday: 0,
+        wednesday: 0,
+        thursday: 0,
+        friday: 0,
       });
       allStudents.push(student);
     });
@@ -74,27 +101,29 @@ export async function getClassStudentsAttendance(
 
   // 2. 출석 날짜들 가져오기
   const attendanceDates = await fetchCollection(["semester", semesterId, "attendance"]);
-  setDates(attendanceDates);
+  setAttendanceDates(attendanceDates);
 
-  // 3. 날짜별 출석 서브컬렉션 처리
+  // 3. 날짜별 출석 데이터 처리
   for (const date of attendanceDates) {
     const dateId = date.id;
+    const weekday = getWeekdayName(dateId);
+    if (!weekday) continue; // 주말 제외
 
     const attendanceList = await fetchCollection(["semester", semesterId, "attendance", dateId, "student_attendance"]);
 
     attendanceList.forEach((record) => {
       const studentId = record.id;
-      const state = record.state; // 0 or 1
+      const state = record.state;
 
       const student = studentMap.get(studentId);
       if (!student) return;
 
-      if (state === 0) student.attendCount += 1;
-      else if (state === 1) student.absentCount += 1;
-
-      student.total = student.attendCount + student.absentCount;
+      if (state === 0) {
+        student[weekday] += 1;
+      }
     });
   }
 
+  console.log(attendanceDates);
   return Array.from(studentMap.values());
 }

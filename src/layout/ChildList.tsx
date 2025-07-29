@@ -8,15 +8,18 @@ type Student = {
   id: string;
   name: string;
   classId: string;
+  state?: number;
 };
 
-type AttendanceSummary = {
-  attendCount: number;
-  absentCount: number;
-  total: number;
+type AttendanceByDay = {
+  monday?: number;
+  tuesday?: number;
+  wednesday?: number;
+  thursday?: number;
+  friday?: number;
 };
 
-type StudentAttendanceInfo = Student & AttendanceSummary;
+type StudentAttendanceInfo = Student & AttendanceByDay;
 
 const Head = styled.div`
   display: grid;
@@ -39,8 +42,8 @@ const AttendanceBox = styled.div`
 `;
 
 const Attendance = styled.span<{ color?: string }>`
-  width: 30px;
-  margin: 0 12px;
+  width: 24px;
+  margin: 0 4px;
   color: ${({ color }) => (color ? color : "#fff")};
 `;
 
@@ -74,9 +77,11 @@ const ChildList = () => {
       <Head>
         <Name>이름</Name>
         <AttendanceBox>
-          <Attendance>결석</Attendance>
-          <Attendance>출석</Attendance>
-          <Attendance>합계</Attendance>
+          <Attendance>월</Attendance>
+          <Attendance>화</Attendance>
+          <Attendance>수</Attendance>
+          <Attendance>목</Attendance>
+          <Attendance>금</Attendance>
         </AttendanceBox>
       </Head>
       <ListWrapper>
@@ -84,9 +89,11 @@ const ChildList = () => {
           <Children>
             <Name isBody={true}>{ele.name}</Name>
             <AttendanceBox>
-              <Attendance color="#76c078">{ele.attendCount}</Attendance>
-              <Attendance color="#CECECE">{ele.absentCount}</Attendance>
-              <Attendance color="#76c078">{ele.total}</Attendance>
+              <Attendance color="#76c078">{ele.monday}</Attendance>
+              <Attendance color="#76c078">{ele.tuesday}</Attendance>
+              <Attendance color="#76c078">{ele.wednesday}</Attendance>
+              <Attendance color="#76c078">{ele.thursday}</Attendance>
+              <Attendance color="#76c078">{ele.friday}</Attendance>
             </AttendanceBox>
           </Children>
         ))}

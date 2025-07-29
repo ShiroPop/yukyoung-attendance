@@ -5,13 +5,13 @@ interface AttendanceDate {
 }
 
 interface AttendanceDatesState {
-  dates: AttendanceDate[];
-  setDates: (dates: AttendanceDate[]) => void;
-  clearDates: () => void;
+  attendanceDates: AttendanceDate[];
+  setAttendanceDates: (dates: AttendanceDate[]) => void;
+  clearAttendanceDates: () => void;
 }
 
 export const useAttendanceDatesStore = create<AttendanceDatesState>((set) => ({
-  dates: [],
-  setDates: (dates) => set({ dates }),
-  clearDates: () => set({ dates: [] }),
+  attendanceDates: [],
+  setAttendanceDates: (attendanceDates) => set({ attendanceDates }),
+  clearAttendanceDates: () => set({ attendanceDates: [] }),
 }));

@@ -87,7 +87,7 @@ const Cell = styled.div<{ isCurrent: boolean }>`
 //
 
 const Calendar = () => {
-  const { dates } = useAttendanceDatesStore();
+  const { attendanceDates } = useAttendanceDatesStore();
   const { date, setDate } = useDateStore();
   const { openPopup } = usePopupStore();
 
@@ -133,7 +133,7 @@ const Calendar = () => {
     const paddedMonth = String(month + 1).padStart(2, "0");
     const paddedDay = String(day).padStart(2, "0");
     const dateStr = `${year}-${paddedMonth}-${paddedDay}`;
-    return dates.some((d) => d.id === dateStr);
+    return attendanceDates.some((d) => d.id === dateStr);
   };
 
   const handleMonth = (next: boolean) => {

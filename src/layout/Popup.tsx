@@ -1,10 +1,12 @@
 import styled from "styled-components";
 import { useStudentsStore } from "../store/studentsStore";
-import { useAttendanceDatesStore } from "../store/attendanceDatesStore";
 import { useEffect, useState } from "react";
-import { addDocument, fetchCollection } from "../utils/firestore";
+import { addDocument, fetchCollection, useCollectionQuery } from "../utils/firestore";
 import { useSemesterStore } from "../store/semesterStore";
 import { usePopupStore } from "../store/popupStore";
+import { useDateStore } from "../store/dateStore";
+import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
+import { db } from "../firebase";
 
 type AttendanceInfo = {
   id: string;
@@ -96,66 +98,71 @@ const ToggleSwitch = styled.label<{ state?: number }>`
 const Popup = () => {
   const { isPopup, closePopup } = usePopupStore();
   const { students } = useStudentsStore();
-  const { dates } = useAttendanceDatesStore();
+  const { date } = useDateStore();
   const { semester } = useSemesterStore();
 
   const [attendances, setAttendances] = useState<AttendanceInfo[]>([]);
 
-  const selectedDate = dates?.[0]?.id;
+  const selectedDate = date;
 
+  const isValidPath = semester && selectedDate;
+
+  const {
+    data: attendanceRecords = [],
+    isLoading,
+    isError,
+  } = useCollectionQuery(
+    isValidPath
+      ? ["semester", semester, "attendance", selectedDate, "student_attendance"]
+      : (["placeholder"] as [string, ...string[]])
+  );
+
+  // 2. 출석 결과 가공
   useEffect(() => {
-    if (!selectedDate || !semester) return;
+    if (!selectedDate || !semester || students.length === 0 || !attendanceRecords) return;
 
-    const loadAttendance = async () => {
-      // 1. 출석 기록 가져오기
-      const attendanceRecords = await fetchCollection([
-        "semester",
-        semester,
-        "attendance",
-        selectedDate,
-        "student_attendance",
-      ]);
+    const attendanceMap = new Map<string, number>();
+    attendanceRecords.forEach((record: { id: string; state: number }) => {
+      attendanceMap.set(record.id, record.state);
+    });
 
-      // 2. 출석 ID => state 맵 생성
-      const attendanceMap = new Map<string, number>();
-      attendanceRecords.forEach((record: { id: string; state: number }) => {
-        attendanceMap.set(record.id, record.state); // 0: 출석, 1: 결석
-      });
+    const result: AttendanceInfo[] = students.map((stu) => ({
+      id: stu.id,
+      name: stu.name,
+      state: attendanceMap.has(stu.id) ? attendanceMap.get(stu.id)! : 1, // 기본값: 결석
+    }));
 
-      // 3. 전체 학생 기준으로 출석 상태 매핑
-      const result: AttendanceInfo[] = students.map((stu) => ({
-        id: stu.id,
-        name: stu.name,
-        state: attendanceMap.has(stu.id) ? attendanceMap.get(stu.id)! : 1, // 없는 경우 결석 처리
-      }));
-
-      setAttendances(result);
-    };
-
-    if (students.length > 0 && dates.length > 0) {
-      loadAttendance();
-    }
-  }, [students, dates, selectedDate, semester]);
+    setAttendances(result);
+  }, [attendanceRecords, students, selectedDate, semester]);
 
   const handleToggle = async (id: string, newState: number) => {
     if (!semester || !selectedDate) return;
 
     try {
-      // 상태 업데이트 로컬
+      // 1. 상위 날짜 문서에 dummy 필드 추가 (없으면)
+      const dateDocRef = doc(db, "semester", semester, "attendance", selectedDate);
+      const dateDocSnap = await getDoc(dateDocRef);
+
+      if (!dateDocSnap.exists()) {
+        await setDoc(dateDocRef, {
+          createdAt: serverTimestamp(),
+          dummy: true,
+        });
+      }
+
+      // 2. 상태 업데이트 로컬
       setAttendances((prev) => prev.map((att) => (att.id === id ? { ...att, state: newState } : att)));
 
-      // Firestore에 반영
+      // 3. Firestore에 반영 (학생 출석 상태 저장)
       await addDocument(`semester/${semester}/attendance/${selectedDate}/student_attendance`, { state: newState }, id);
     } catch (error) {
       console.error("출석 상태 업데이트 실패:", error);
     }
   };
 
-  console.log(attendances);
-
   return (
     <PopupWrap isPopup={isPopup} onClick={closePopup}>
-      <PopupBox>
+      <PopupBox onClick={(e) => e.stopPropagation()}>
         <ListWrap>
           {attendances.map((ele) => (
             <ChildrenList key={ele.id}>
