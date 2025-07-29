@@ -147,8 +147,9 @@ const Calendar = () => {
     const isAttendance = attendanceDates?.some((d) => d.id === dateStr) ?? false;
     const isHoliday = holidayDates?.some((d) => d.id === dateStr) ?? false;
 
+    if (isAttendance && isHoliday) return "#FFB37D";
     if (isAttendance) return "none";
-    if (isHoliday) return "#FFA4A4";
+    if (isHoliday) return "#FF9696";
     return "#E2E2E2";
   };
 

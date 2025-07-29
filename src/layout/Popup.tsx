@@ -4,9 +4,9 @@ import { addDocument } from "../utils/firestore";
 import { useSemesterStore } from "../store/semesterStore";
 import { usePopupStore } from "../store/popupStore";
 import { useDateStore } from "../store/dateStore";
-import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
+import { deleteDoc, doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 import { db } from "../firebase";
-import { useAttendanceDatesQuery, useAttendanceQuery, useStudentsQuery } from "../api/useQuery";
+import { useAttendanceDatesQuery, useAttendanceQuery, useHolidayQuery, useStudentsQuery } from "../api/useQuery";
 import { useClassesStore } from "../store/classesStore";
 import { useClassStudentsAttendance } from "../hooks/useClassStudentsAttendance";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -42,7 +42,7 @@ const PopupBox = styled.div`
 `;
 
 const ListWrap = styled.div`
-  max-height: 350px;
+  max-height: 400px;
   overflow-y: auto;
   overflow-x: hidden;
 `;
@@ -98,6 +98,44 @@ const ToggleSwitch = styled.label<{ state?: number }>`
   }
 `;
 
+const HolidayButton = styled.button<{ $isHoliday: boolean }>`
+  width: 100%;
+  height: 44px;
+  background-color: ${({ $isHoliday }) => ($isHoliday ? "#ff9696" : "#76c078")};
+  color: #fff;
+  border: none;
+  border-radius: 99px;
+  font-size: 16px;
+  transition: background-color 0.5s, color 0.2s;
+  margin-top: 20px;
+  cursor: pointer;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background-color: ${({ $isHoliday }) => ($isHoliday ? "#ff96964d" : "#76c0784d")};
+    }
+  }
+`;
+
+const HolidayDelButton = styled.button`
+  width: 100%;
+  height: 44px;
+  background-color: #ff9696;
+  color: #fff;
+  border: none;
+  border-radius: 99px;
+  font-size: 16px;
+  transition: background-color 0.5s, color 0.2s;
+  margin-top: 20px;
+  cursor: pointer;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background-color: #ff96964d;
+    }
+  }
+`;
+
 const Popup = () => {
   const { isPopup, closePopup } = usePopupStore();
   const { date } = useDateStore();
@@ -105,6 +143,7 @@ const Popup = () => {
   const { classId } = useClassesStore();
 
   const { data: students } = useStudentsQuery(classId.id);
+  const { data: holidayDates, refetch: holidayRefetch } = useHolidayQuery();
 
   const { refetch: attendanceDatesRefetch } = useAttendanceDatesQuery();
   const { refetch: classStudentsAttendanceRefetch } = useClassStudentsAttendance(classId.id);
@@ -165,6 +204,55 @@ const Popup = () => {
     mutation.mutate({ id, newState });
   };
 
+  const isHoliday = (date: string): boolean => {
+    return holidayDates?.some((holiday) => holiday.id === date) ?? false;
+  };
+
+  const holiMutation = useMutation({
+    mutationFn: async () => {
+      const holiDocRef = doc(db, "holiday", date);
+      const holiDocSnap = await getDoc(holiDocRef);
+
+      if (!holiDocSnap.exists()) {
+        await setDoc(holiDocRef, {
+          name: " ",
+        });
+      }
+    },
+    onSuccess: async (_) => {
+      await queryClient.invalidateQueries({ queryKey: ["attendance", semester, date] });
+      await queryClient.invalidateQueries({ queryKey: ["class-students-attendance", semester, classId] });
+
+      attendanceDatesRefetch();
+      classStudentsAttendanceRefetch();
+      holidayRefetch();
+    },
+  });
+
+  const handleHoliBtn = async () => {
+    holiMutation.mutate();
+  };
+
+  const holiDelMutation = useMutation({
+    mutationFn: async () => {
+      const docRef = doc(db, "holiday", date);
+      await deleteDoc(docRef);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["attendance", semester, date] });
+      await queryClient.invalidateQueries({ queryKey: ["class-students-attendance", semester, classId] });
+
+      attendanceDatesRefetch();
+      classStudentsAttendanceRefetch();
+      holidayRefetch();
+    },
+  });
+
+  const deleteHolibtn = async () => {
+    console.log("삭제 버튼 클릭됨:", date);
+    holiDelMutation.mutate();
+  };
+
   return (
     <PopupWrap $isPopup={isPopup} onClick={closePopup}>
       <PopupBox onClick={(e) => e.stopPropagation()}>
@@ -183,7 +271,18 @@ const Popup = () => {
             </ChildrenList>
           ))}
         </ListWrap>
-        <div>휴일등록</div>
+        <HolidayButton
+          onClick={() => {
+            if (isHoliday(date)) {
+              deleteHolibtn();
+            } else {
+              handleHoliBtn();
+            }
+          }}
+          $isHoliday={isHoliday(date)}
+        >
+          휴일{isHoliday(date) ? "삭제" : "등록"}
+        </HolidayButton>
       </PopupBox>
     </PopupWrap>
   );
