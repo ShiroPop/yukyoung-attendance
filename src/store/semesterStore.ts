@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 interface SemesterStore {
-  semester: string | null;
+  semester: string;
   setSemester: (semester: string) => void;
 }
 

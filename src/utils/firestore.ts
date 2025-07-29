@@ -3,13 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import { db } from "../firebase";
 import { collection, getDocs, query, QueryConstraint, addDoc, setDoc, doc, serverTimestamp } from "firebase/firestore";
 
-export const useCollectionQuery = (pathSegments: [string, ...string[]], constraints: QueryConstraint[] = []) => {
-  return useQuery({
-    queryKey: ["collection", ...pathSegments, ...constraints.map(String)],
-    queryFn: () => fetchCollection(pathSegments, constraints),
-  });
-};
-
 export async function fetchCollection(
   pathSegments: [string, ...string[]],
   constraints: QueryConstraint[] = []

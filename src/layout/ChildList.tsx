@@ -1,8 +1,6 @@
 import styled from "styled-components";
 import { useClassesStore } from "../store/classesStore";
-import { useEffect, useState } from "react";
-import { getClassStudentsAttendance } from "../utils/getClassStudentsAttendance";
-import { useSemesterStore } from "../store/semesterStore";
+import { useClassStudentsAttendance } from "../hooks/useClassStudentsAttendance";
 
 type Student = {
   id: string;
@@ -63,14 +61,8 @@ const Children = styled.div`
 
 const ChildList = () => {
   const { classId } = useClassesStore();
-  const { semester } = useSemesterStore();
 
-  const [student, setStudent] = useState<StudentAttendanceInfo[]>([]);
-
-  useEffect(() => {
-    if (!semester || !classId) return;
-    getClassStudentsAttendance(semester, classId.id).then(setStudent);
-  }, [classId]);
+  const { data: student = [], isLoading } = useClassStudentsAttendance(classId.id);
 
   return (
     <>

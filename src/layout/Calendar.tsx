@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { useAttendanceDatesStore } from "../store/attendanceDatesStore";
 import { useDateStore } from "../store/dateStore";
 import { usePopupStore } from "../store/popupStore";
+import { useAttendanceDatesQuery } from "../api/useQuery";
 
 interface date {
   day: number;
@@ -87,7 +88,7 @@ const Cell = styled.div<{ isCurrent: boolean }>`
 //
 
 const Calendar = () => {
-  const { attendanceDates } = useAttendanceDatesStore();
+  const { data: attendanceDates } = useAttendanceDatesQuery();
   const { date, setDate } = useDateStore();
   const { openPopup } = usePopupStore();
 
@@ -133,7 +134,7 @@ const Calendar = () => {
     const paddedMonth = String(month + 1).padStart(2, "0");
     const paddedDay = String(day).padStart(2, "0");
     const dateStr = `${year}-${paddedMonth}-${paddedDay}`;
-    return attendanceDates.some((d) => d.id === dateStr);
+    return attendanceDates?.some((d) => d.id === dateStr) ?? false;
   };
 
   const handleMonth = (next: boolean) => {

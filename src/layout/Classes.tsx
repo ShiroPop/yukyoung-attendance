@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import { fetchCollection } from "../utils/firestore";
 import { useClassesStore } from "../store/classesStore";
 import styled from "styled-components";
-import { getClassStudentsAttendance } from "../utils/getClassStudentsAttendance";
 import { useSemesterStore } from "../store/semesterStore";
 
 interface ClassesType {
@@ -98,6 +97,9 @@ const Classes = () => {
     scrollRef.current.scrollLeft = scrollLeft.current - walk;
   };
 
+  //
+  // 유즈쿼리로 바꾸기
+  //
   useEffect(() => {
     if (!semester) return;
     fetchCollection(["semester", semester, "class"]).then(setClasses);

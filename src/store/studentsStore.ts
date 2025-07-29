@@ -1,5 +1,11 @@
 import { create } from "zustand";
-import { Student } from "../utils/getClassStudentsAttendance";
+
+type Student = {
+  id: string;
+  name: string;
+  classId: string;
+  state?: number;
+};
 
 interface StudentsState {
   students: Student[];
