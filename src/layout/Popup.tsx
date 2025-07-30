@@ -42,7 +42,7 @@ const PopupBox = styled.div`
 `;
 
 const ListWrap = styled.div`
-  max-height: 400px;
+  height: 82%;
   overflow-y: auto;
   overflow-x: hidden;
 `;

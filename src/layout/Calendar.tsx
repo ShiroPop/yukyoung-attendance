@@ -1,10 +1,13 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import styled from "styled-components";
 import { useDateStore } from "../store/dateStore";
 import { usePopupStore } from "../store/popupStore";
 import { useAttendanceDatesQuery, useHolidayQuery } from "../api/useQuery";
+import { useCalendarHeightStore } from "../store/calendarHeightStore";
 
 const CalendarTop = styled.div`
+  flex-grow: 1;
+  overflow-y: auto;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -91,18 +94,17 @@ const Cell = styled.div<{ $isCurrent: boolean }>`
   cursor: pointer;
 `;
 
-//
-// 클래스 바 구현 후, join한 date 값을 가지고 cell css 수정하기
-//
-
 const Calendar = () => {
   const { data: attendanceDates } = useAttendanceDatesQuery();
   const { data: holidayDates } = useHolidayQuery();
   const { date, setDate } = useDateStore();
   const { openPopup } = usePopupStore();
+  const { setCalendarHeight } = useCalendarHeightStore();
 
   const [year, setYear] = useState(new Date().getFullYear());
   const [month, setMonth] = useState(new Date().getMonth());
+
+  const calendarRef = useRef<HTMLDivElement>(null);
 
   const weekDays = ["일", "월", "화", "수", "목", "금", "토"];
 
@@ -138,6 +140,25 @@ const Calendar = () => {
 
     return weeks;
   }, [year, month]);
+
+  useEffect(() => {
+    const updateHeight = () => {
+      if (calendarRef.current) {
+        setCalendarHeight(calendarRef.current.offsetHeight);
+      }
+    };
+
+    updateHeight();
+
+    const resizeObserver = new ResizeObserver(updateHeight);
+    if (calendarRef.current) {
+      resizeObserver.observe(calendarRef.current);
+    }
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, []);
 
   const getAttendanceColor = (day: number): string => {
     const paddedMonth = String(month + 1).padStart(2, "0");
@@ -180,7 +201,7 @@ const Calendar = () => {
   };
 
   return (
-    <>
+    <div ref={calendarRef}>
       <CalendarTop>
         <div onClick={() => handleMonth(false)}>◀</div>
         <CalendarTopFont>{year}년</CalendarTopFont>
@@ -223,7 +244,7 @@ const Calendar = () => {
           ))}
         </tbody>
       </CalendarTable>
-    </>
+    </div>
   );
 };
 

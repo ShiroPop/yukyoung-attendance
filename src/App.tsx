@@ -11,9 +11,11 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <div className="App">
-        <Calendar />
-        <Classes />
-        <ChildList />
+        <div className="Wrapper">
+          <Calendar />
+          <Classes />
+          <ChildList />
+        </div>
         <Popup />
       </div>
     </QueryClientProvider>

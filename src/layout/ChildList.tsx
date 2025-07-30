@@ -1,6 +1,12 @@
 import styled from "styled-components";
 import { useClassesStore } from "../store/classesStore";
 import { useClassStudentsAttendance } from "../hooks/useClassStudentsAttendance";
+import { useCalendarHeightStore } from "../store/calendarHeightStore";
+
+const ChildListWrapper = styled.div`
+  flex-shrink: 0;
+  overflow-y: auto;
+`;
 
 const Head = styled.div`
   display: grid;
@@ -28,10 +34,10 @@ const Attendance = styled.span<{ color?: string }>`
   color: ${({ color }) => (color ? color : "#fff")};
 `;
 
-const ListWrapper = styled.div`
-  max-height: 350px;
+const ListWrapper = styled.div<{ $calendarHeight: number }>`
   overflow-y: auto;
   overflow-x: hidden;
+  height: calc(100vh - 110px - ${({ $calendarHeight }) => $calendarHeight}px);
 `;
 
 const Children = styled.div`
@@ -44,11 +50,12 @@ const Children = styled.div`
 
 const ChildList = () => {
   const { classId } = useClassesStore();
+  const { calendarHeight } = useCalendarHeightStore();
 
   const { data: student = [], isLoading } = useClassStudentsAttendance(classId.id);
 
   return (
-    <>
+    <ChildListWrapper>
       <Head>
         <Name>이름</Name>
         <AttendanceBox>
@@ -59,7 +66,7 @@ const ChildList = () => {
           <Attendance>금</Attendance>
         </AttendanceBox>
       </Head>
-      <ListWrapper>
+      <ListWrapper $calendarHeight={calendarHeight}>
         {student.map((ele) => (
           <Children key={ele.id}>
             <Name isBody={true}>{ele.name}</Name>
@@ -73,7 +80,7 @@ const ChildList = () => {
           </Children>
         ))}
       </ListWrapper>
-    </>
+    </ChildListWrapper>
   );
 };
 
