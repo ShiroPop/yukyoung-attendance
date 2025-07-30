@@ -23,6 +23,7 @@ const PopupWrap = styled.div<{ $isPopup: boolean }>`
   justify-content: center;
   align-items: center;
   width: 100vw;
+  height: 100dvh;
   height: 100vh;
   z-index: 1;
   top: 0;
@@ -249,7 +250,6 @@ const Popup = () => {
   });
 
   const deleteHolibtn = async () => {
-    console.log("삭제 버튼 클릭됨:", date);
     holiDelMutation.mutate();
   };
 
