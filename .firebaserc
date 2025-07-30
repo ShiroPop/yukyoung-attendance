@@ -7,12 +7,16 @@
   "targets": {
     "school-attendance-test": {
       "hosting": {
-        "test": ["school-attendance-test-site"]   // 실제 Hosting 사이트 이름으로 교체
+        "test": [
+          "school-attendance-test-site"
+        ]
       }
     },
     "attendance-ac": {
       "hosting": {
-        "prod": ["yukyoung-attendance-ac519-site"]           // 실제 Hosting 사이트 이름으로 교체
+        "prod": [
+          "yukyoung-attendance-ac519-site"
+        ]
       }
     }
   }
