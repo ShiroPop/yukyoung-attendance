@@ -53,11 +53,7 @@ export const useClassStudentsAttendance = (classId?: string) => {
   });
 
   const isReady =
-    !!semester &&
-    !!classId &&
-    students.length > 0 &&
-    attendanceDates.length > 0 &&
-    attendanceQueries.every((q) => q.isSuccess || q.isFetched);
+    !!semester && !!classId && students.length > 0 && attendanceQueries.every((q) => q.isSuccess || q.isFetched);
 
   const getData = () => {
     const studentMap = new Map<string, StudentAttendanceInfo>();
