@@ -1,6 +1,6 @@
 {
   "projects": {
-    "default": "school-attendance-test",
+    "default": "yukyoung-attendance-ac519",
     "test": "school-attendance-test",
     "prod": "yukyoung-attendance-ac519"
   },
