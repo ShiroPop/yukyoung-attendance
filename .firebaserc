@@ -1,23 +1,5 @@
 {
   "projects": {
-    "default": "yukyoung-attendance-ac519",
-    "test": "school-attendance-test",
-    "prod": "yukyoung-attendance-ac519"
-  },
-  "targets": {
-    "school-attendance-test": {
-      "hosting": {
-        "test": [
-          "school-attendance-test-site"
-        ]
-      }
-    },
-    "attendance-ac": {
-      "hosting": {
-        "prod": [
-          "yukyoung-attendance-ac519-site"
-        ]
-      }
-    }
+    "default": "yukyoung-attendance-ac519"
   }
 }
