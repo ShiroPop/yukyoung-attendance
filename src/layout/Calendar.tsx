@@ -16,6 +16,9 @@ const CalendarTop = styled.div`
   border-top: 1px solid #00000030;
   border-bottom: 1px solid #00000030;
   margin: 0 0 10px 0;
+`;
+
+const CalendarTopButton = styled.div`
   cursor: pointer;
 `;
 
@@ -203,10 +206,10 @@ const Calendar = () => {
   return (
     <div ref={calendarRef}>
       <CalendarTop>
-        <div onClick={() => handleMonth(false)}>◀</div>
+        <CalendarTopButton onClick={() => handleMonth(false)}>◀</CalendarTopButton>
         <CalendarTopFont>{year}년</CalendarTopFont>
         <CalendarTopFont>{month + 1}월</CalendarTopFont>
-        <div onClick={() => handleMonth(true)}>▶</div>
+        <CalendarTopButton onClick={() => handleMonth(true)}>▶</CalendarTopButton>
       </CalendarTop>
       <CalendarTable>
         <thead>
