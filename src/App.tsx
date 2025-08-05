@@ -12,8 +12,10 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <div className="App">
         <div className="Wrapper">
-          <Calendar />
-          <Classes />
+          <div>
+            <Calendar />
+            <Classes />
+          </div>
           <ChildList />
         </div>
         <Popup />

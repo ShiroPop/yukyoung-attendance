@@ -1,10 +1,10 @@
 import styled from "styled-components";
 import { useEffect, useState } from "react";
-import { addDocument } from "../utils/firestore";
+import { addDocument, fetchCollection } from "../utils/firestore";
 import { useSemesterStore } from "../store/semesterStore";
 import { usePopupStore } from "../store/popupStore";
 import { useDateStore } from "../store/dateStore";
-import { deleteDoc, doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
+import { deleteDoc, doc, getDoc, getDocs, serverTimestamp, setDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { useAttendanceDatesQuery, useAttendanceQuery, useHolidayQuery, useStudentsQuery } from "../api/useQuery";
 import { useClassesStore } from "../store/classesStore";
@@ -166,7 +166,7 @@ const Popup = () => {
     const result: AttendanceInfo[] = students.map((stu) => ({
       id: stu.id,
       name: stu.name,
-      state: attendanceMap.has(stu.id) ? attendanceMap.get(stu.id)! : 1, // 기본값: 결석
+      state: attendanceMap.has(stu.id) ? attendanceMap.get(stu.id)! : 1,
     }));
 
     setAttendances(result);
@@ -174,20 +174,28 @@ const Popup = () => {
 
   const mutation = useMutation({
     mutationFn: async ({ id, newState }: { id: string; newState: number }) => {
-      const dateDocRef = doc(db, "semester", semester!, "attendance", date!);
-      const dateDocSnap = await getDoc(dateDocRef);
+      const dateDocPath = ["semester", semester!, "attendance", date!];
+      const studentColPath = [...dateDocPath, "student_attendance"];
+      const studentDocRef = doc(db, `semester/${semester}/attendance/${date}/student_attendance/${id}`);
+      const dateDocRef = doc(db, `semester/${semester}/attendance/${date}`);
 
-      if (!dateDocSnap.exists()) {
-        await setDoc(dateDocRef, {
-          createdAt: serverTimestamp(),
-          dummy: true,
-        });
+      if (newState === 0) {
+        const dateDocSnap = await getDoc(dateDocRef);
+        if (!dateDocSnap.exists()) {
+          await addDocument(dateDocPath.join("/"), {});
+        }
+        await addDocument(studentColPath.join("/"), { state: newState }, id);
+      } else {
+        await deleteDoc(studentDocRef);
+
+        const remaining = await fetchCollection(studentColPath as [string, ...string[]]);
+        if (remaining.length === 0) {
+          await deleteDoc(dateDocRef);
+        }
       }
-
-      await addDocument(`semester/${semester}/attendance/${date}/student_attendance`, { state: newState }, id);
     },
 
-    onSuccess: async (_, { id }) => {
+    onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["attendance", semester, date] });
       await queryClient.invalidateQueries({ queryKey: ["class-students-attendance", semester, classId] });
 

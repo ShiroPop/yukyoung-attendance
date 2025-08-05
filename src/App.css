@@ -8,3 +8,9 @@
   display: flex;
   flex-direction: column;
 }
+
+@media (min-width: 910px) {
+  .Wrapper {
+    flex-direction: row;
+  }
+}

@@ -6,14 +6,21 @@ import { useCalendarHeightStore } from "../store/calendarHeightStore";
 const ChildListWrapper = styled.div`
   flex-shrink: 0;
   overflow-y: auto;
+  flex: 1;
 `;
 
 const Head = styled.div`
-  display: grid;
-  justify-items: center;
-  grid-template-columns: 2fr 1fr;
+  width: 100%;
   background-color: #76c078;
   color: #fff;
+`;
+
+const HeadContent = styled.div`
+  display: grid;
+  justify-items: end;
+  grid-template-columns: 2fr 1fr;
+  max-width: 600px;
+  margin: 0 auto;
   padding: 8px 30px;
 `;
 
@@ -39,14 +46,25 @@ const ListWrapper = styled.div<{ $calendarHeight: number }>`
   overflow-x: hidden;
   height: calc(100dvh - 110px - ${({ $calendarHeight }) => $calendarHeight}px);
   height: calc(100vh - 110px - ${({ $calendarHeight }) => $calendarHeight}px);
+
+  @media (min-width: 910px) {
+    height: 100dvh;
+    height: 100vh;
+  }
 `;
 
 const Children = styled.div`
-  display: grid;
-  justify-items: center;
-  grid-template-columns: 2fr 1fr;
-  padding: 12px 30px;
+  width: 100%;
   border-bottom: 1px solid #cecece;
+`;
+
+const ChildrenContent = styled.div`
+  display: grid;
+  justify-items: end;
+  grid-template-columns: 2fr 1fr;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 12px 30px;
 `;
 
 const ChildList = () => {
@@ -58,26 +76,30 @@ const ChildList = () => {
   return (
     <ChildListWrapper>
       <Head>
-        <Name>이름</Name>
-        <AttendanceBox>
-          <Attendance>월</Attendance>
-          <Attendance>화</Attendance>
-          <Attendance>수</Attendance>
-          <Attendance>목</Attendance>
-          <Attendance>금</Attendance>
-        </AttendanceBox>
+        <HeadContent>
+          <Name>이름</Name>
+          <AttendanceBox>
+            <Attendance>월</Attendance>
+            <Attendance>화</Attendance>
+            <Attendance>수</Attendance>
+            <Attendance>목</Attendance>
+            <Attendance>금</Attendance>
+          </AttendanceBox>
+        </HeadContent>
       </Head>
       <ListWrapper $calendarHeight={calendarHeight}>
         {student.map((ele) => (
           <Children key={ele.id}>
-            <Name isBody={true}>{ele.name}</Name>
-            <AttendanceBox>
-              <Attendance color="#76c078">{ele.monday}</Attendance>
-              <Attendance color="#76c078">{ele.tuesday}</Attendance>
-              <Attendance color="#76c078">{ele.wednesday}</Attendance>
-              <Attendance color="#76c078">{ele.thursday}</Attendance>
-              <Attendance color="#76c078">{ele.friday}</Attendance>
-            </AttendanceBox>
+            <ChildrenContent>
+              <Name isBody={true}>{ele.name}</Name>
+              <AttendanceBox>
+                <Attendance color="#76c078">{ele.monday}</Attendance>
+                <Attendance color="#76c078">{ele.tuesday}</Attendance>
+                <Attendance color="#76c078">{ele.wednesday}</Attendance>
+                <Attendance color="#76c078">{ele.thursday}</Attendance>
+                <Attendance color="#76c078">{ele.friday}</Attendance>
+              </AttendanceBox>
+            </ChildrenContent>
           </Children>
         ))}
       </ListWrapper>
