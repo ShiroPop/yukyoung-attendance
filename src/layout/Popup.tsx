@@ -4,7 +4,7 @@ import { addDocument, fetchCollection } from "../utils/firestore";
 import { useSemesterStore } from "../store/semesterStore";
 import { usePopupStore } from "../store/popupStore";
 import { useDateStore } from "../store/dateStore";
-import { deleteDoc, doc, getDoc, getDocs, serverTimestamp, setDoc } from "firebase/firestore";
+import { deleteDoc, doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { useAttendanceDatesQuery, useAttendanceQuery, useHolidayQuery, useStudentsQuery } from "../api/useQuery";
 import { useClassesStore } from "../store/classesStore";
@@ -118,25 +118,6 @@ const HolidayButton = styled.button<{ $isHoliday: boolean }>`
   }
 `;
 
-const HolidayDelButton = styled.button`
-  width: 100%;
-  height: 44px;
-  background-color: #ff9696;
-  color: #fff;
-  border: none;
-  border-radius: 99px;
-  font-size: 16px;
-  transition: background-color 0.5s, color 0.2s;
-  margin-top: 20px;
-  cursor: pointer;
-
-  @media (hover: hover) and (pointer: fine) {
-    &:hover {
-      background-color: #ff96964d;
-    }
-  }
-`;
-
 const Popup = () => {
   const { isPopup, closePopup } = usePopupStore();
   const { date } = useDateStore();
@@ -151,7 +132,7 @@ const Popup = () => {
 
   const [attendances, setAttendances] = useState<AttendanceInfo[]>([]);
 
-  const { data: attendanceRecords = [], refetch, isLoading, isError } = useAttendanceQuery();
+  const { data: attendanceRecords = [] } = useAttendanceQuery();
 
   const queryClient = useQueryClient();
 

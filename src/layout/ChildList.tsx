@@ -71,7 +71,7 @@ const ChildList = () => {
   const { classId } = useClassesStore();
   const { calendarHeight } = useCalendarHeightStore();
 
-  const { data: student = [], isLoading } = useClassStudentsAttendance(classId.id);
+  const { data: student = [] } = useClassStudentsAttendance(classId.id);
 
   return (
     <ChildListWrapper>

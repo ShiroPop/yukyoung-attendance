@@ -1,5 +1,4 @@
 // src/utils/firestore.ts
-import { useQuery } from "@tanstack/react-query";
 import { db } from "../firebase";
 import { collection, getDocs, query, QueryConstraint, addDoc, setDoc, doc, serverTimestamp } from "firebase/firestore";
 
