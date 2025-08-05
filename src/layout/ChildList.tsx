@@ -48,8 +48,8 @@ const ListWrapper = styled.div<{ $calendarHeight: number }>`
   height: calc(100vh - 110px - ${({ $calendarHeight }) => $calendarHeight}px);
 
   @media (min-width: 910px) {
-    height: 100dvh;
-    height: 100vh;
+    height: calc(100dvh - 40px);
+    height: calc(100vh - 40px);
   }
 `;
 
