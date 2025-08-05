@@ -158,7 +158,7 @@ const Calendar = () => {
     return () => {
       resizeObserver.disconnect();
     };
-  }, []);
+  }, [setCalendarHeight]);
 
   const getAttendanceColor = (day: number): string => {
     const paddedMonth = String(month + 1).padStart(2, "0");

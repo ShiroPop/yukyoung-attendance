@@ -99,7 +99,7 @@ const Classes = () => {
   useEffect(() => {
     if (!semester) return;
     fetchCollection(["semester", semester, "class"]).then(setClasses);
-  }, [semester]);
+  }, [semester, setClasses]);
 
   return (
     <>
