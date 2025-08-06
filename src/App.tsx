@@ -6,6 +6,7 @@ import Classes from "./layout/Classes";
 import Popup from "./layout/Popup";
 import Login from "./layout/Login";
 import { useUserStore } from "./store/userStore";
+import Logout from "./layout/Logout";
 
 const queryClient = new QueryClient();
 
@@ -18,6 +19,7 @@ function App() {
         <div className="App">
           <div className="Wrapper">
             <div>
+              <Logout />
               <Calendar />
               <Classes />
             </div>
