@@ -119,7 +119,7 @@ const HolidayButton = styled.button<{ $isHoliday: boolean }>`
   }
 `;
 
-const Popup = () => {
+const AttendancePopup = () => {
   const { isPopup, closePopup } = usePopupStore();
   const { date } = useDateStore();
   const { semester } = useSemesterStore();
@@ -281,4 +281,4 @@ const Popup = () => {
   );
 };
 
-export default Popup;
+export default AttendancePopup;
