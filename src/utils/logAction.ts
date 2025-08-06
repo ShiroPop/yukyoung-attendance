@@ -1,7 +1,5 @@
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase";
-import { getAuth } from "firebase/auth";
-import { useUserStore } from "../store/userStore";
 
 interface LogData {
   action: "create" | "update" | "delete";
@@ -12,9 +10,6 @@ interface LogData {
 }
 
 export const logAction = async ({ action, collection, documentId, data, performedBy }: LogData) => {
-  const auth = getAuth();
-  const currentUser = auth.currentUser;
-
   const logRef = doc(db, "action_logs", `${collection}_${documentId}_${Date.now()}`);
 
   await setDoc(logRef, {
