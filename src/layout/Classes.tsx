@@ -1,8 +1,6 @@
-import { useEffect, useRef, useState } from "react";
-import { fetchCollection } from "../utils/firestore";
+import { useRef, useState } from "react";
 import { useClassesStore } from "../store/classesStore";
 import styled from "styled-components";
-import { useSemesterStore } from "../store/semesterStore";
 import { useClassesQuery } from "../api/useQuery";
 
 const ScrollContainer = styled.div`
