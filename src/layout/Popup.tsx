@@ -15,7 +15,7 @@ import { useUserStore } from "../store/userStore";
 type AttendanceInfo = {
   id: string;
   name: string;
-  state: number; // 0 | 1
+  state: number;
 };
 
 const PopupWrap = styled.div<{ $isPopup: boolean }>`
