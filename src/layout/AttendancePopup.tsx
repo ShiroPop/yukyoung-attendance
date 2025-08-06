@@ -1,10 +1,9 @@
 import styled from "styled-components";
 import { useEffect, useState } from "react";
-import { addDocument, fetchCollection } from "../utils/firestore";
 import { useSemesterStore } from "../store/semesterStore";
 import { usePopupStore } from "../store/popupStore";
 import { useDateStore } from "../store/dateStore";
-import { deleteDoc, doc, getDoc, setDoc } from "firebase/firestore";
+import { deleteDoc, doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { useAttendanceDatesQuery, useAttendanceQuery, useHolidayQuery, useStudentsQuery } from "../api/useQuery";
 import { useClassesStore } from "../store/classesStore";
@@ -157,22 +156,27 @@ const AttendancePopup = () => {
 
   const mutation = useMutation({
     mutationFn: async ({ id, newState }: { id: string; newState: number }) => {
-      const dateDocPath = ["semester", semester!, "attendance", date!];
-      const studentColPath = [...dateDocPath, "student_attendance"];
-      const studentDocRef = doc(db, `semester/${semester}/attendance/${date}/student_attendance/${id}`);
-      const dateDocRef = doc(db, `semester/${semester}/attendance/${date}`);
+      const dateDocRef = doc(db, "semester", semester!, "attendance", date!);
+      const studentDocRef = doc(db, "semester", semester!, "attendance", date!, "student_attendance", id);
 
       if (newState === 0) {
+        // 날짜 문서가 없으면 생성
         const dateDocSnap = await getDoc(dateDocRef);
         if (!dateDocSnap.exists()) {
-          await addDocument(dateDocPath.join("/"), {});
+          await setDoc(dateDocRef, { createdAt: serverTimestamp() });
         }
-        await addDocument(studentColPath.join("/"), { state: newState }, id);
+
+        // 학생 출석 상태 생성
+        await setDoc(studentDocRef, { state: newState, createdAt: serverTimestamp() });
       } else {
+        // 비출석 처리 (출석 문서 삭제)
         await deleteDoc(studentDocRef);
 
-        const remaining = await fetchCollection(studentColPath as [string, ...string[]]);
+        // 현재 출석한 다른 학생이 있는지 확인
+        const remaining = attendanceRecords.filter((r) => r.id !== id && r.state === 0);
+
         if (remaining.length === 0) {
+          // 더 이상 출석한 학생이 없으면 날짜 문서 삭제
           await deleteDoc(dateDocRef);
         }
       }

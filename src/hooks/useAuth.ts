@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { useUserStore } from "../store/userStore";
+import { useDateStore } from "../store/dateStore";
+import { usePopupStore } from "../store/popupStore";
 
 interface UserWithoutId {
   role: string;
@@ -15,10 +17,15 @@ let logoutTimer: ReturnType<typeof setTimeout>; // 전역 타이머
 
 export const useAuth = () => {
   const [loading, setLoading] = useState(false);
+
   const { setUser, setLoginError } = useUserStore();
+  const { resetDate } = useDateStore();
+  const { resetPopup } = usePopupStore();
 
   // 로그아웃
   const logout = () => {
+    resetDate();
+    resetPopup();
     clearTimeout(logoutTimer);
     setUser(null);
     localStorage.removeItem("userId");
