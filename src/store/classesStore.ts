@@ -16,6 +16,6 @@ interface ClassesStore {
 export const useClassesStore = create<ClassesStore>((set) => ({
   classes: [],
   setClasses: (classes) => set({ classes }),
-  classId: { id: "전체" },
+  classId: { id: "all" },
   setClassId: (classId) => set({ classId }),
 }));

@@ -2,6 +2,11 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchCollection } from "../utils/firestore";
 import { useDateStore } from "../store/dateStore";
 import { useSemesterStore } from "../store/semesterStore";
+import { useUserStore } from "../store/userStore";
+
+interface ClassId {
+  id: string;
+}
 
 export const useHolidayQuery = () => {
   return useQuery({
@@ -20,11 +25,22 @@ export const useAttendanceQuery = () => {
   });
 };
 
-export const useClasses = () => {
+export const useClassesQuery = () => {
   const { semester } = useSemesterStore();
+  const { user } = useUserStore();
+
   return useQuery({
-    queryKey: ["semester", semester, "class"],
-    queryFn: () => fetchCollection(["semester", semester, "class"]),
+    queryKey: ["semester", semester, "class", user?.id],
+    queryFn: async () => {
+      const allClasses = await fetchCollection(["semester", semester, "class"]);
+
+      if (!user || !user.assigned_classes) return [];
+
+      const filtered = allClasses.filter((classItem: ClassId) => user.assigned_classes.includes(classItem.id));
+
+      return filtered;
+    },
+    enabled: !!semester && !!user,
   });
 };
 
@@ -41,12 +57,14 @@ const normalizeStudent = (stu: any, classId: string) => ({
 
 export const useStudentsQuery = (classId: string) => {
   const { semester } = useSemesterStore();
+  const { data: assignedClasses } = useClassesQuery();
 
   return useQuery({
-    queryKey: ["students", semester, classId],
+    queryKey: ["students", semester, classId, assignedClasses],
     queryFn: async () => {
-      if (classId === "전체") {
-        const classes = await fetchCollection(["semester", semester, "class"]);
+      if (classId === "all") {
+        const classes = assignedClasses ?? [];
+        console.log(assignedClasses);
 
         const allStudents = await Promise.all(
           classes.map(async (cls) => {

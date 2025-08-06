@@ -3,6 +3,7 @@ import { fetchCollection } from "../utils/firestore";
 import { useClassesStore } from "../store/classesStore";
 import styled from "styled-components";
 import { useSemesterStore } from "../store/semesterStore";
+import { useClassesQuery } from "../api/useQuery";
 
 const ScrollContainer = styled.div`
   display: flex;
@@ -53,10 +54,9 @@ const ClassInput = styled.input`
 `;
 
 const Classes = () => {
-  const { classes, setClasses, setClassId } = useClassesStore();
-  const { semester } = useSemesterStore();
+  const { setClassId } = useClassesStore();
 
-  const [selectedClass, setSelectedClass] = useState("전체");
+  const [selectedClass, setSelectedClass] = useState("all");
 
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const isDragging = useRef(false);
@@ -88,13 +88,7 @@ const Classes = () => {
     scrollRef.current.scrollLeft = scrollLeft.current - walk;
   };
 
-  //
-  // 유즈쿼리로 바꾸기
-  //
-  useEffect(() => {
-    if (!semester) return;
-    fetchCollection(["semester", semester, "class"]).then(setClasses);
-  }, [semester, setClasses]);
+  const { data } = useClassesQuery();
 
   return (
     <>
@@ -105,18 +99,18 @@ const Classes = () => {
         onMouseUp={handleMouseUp}
         onMouseMove={handleMouseMove}
       >
-        <ClassLabel selected={selectedClass === "전체"}>
+        <ClassLabel selected={selectedClass === "all"}>
           <ClassInput
             type="radio"
             name="class"
             onChange={() => {
-              setSelectedClass("전체");
-              setClassId({ id: "전체" });
+              setSelectedClass("all");
+              setClassId({ id: "all" });
             }}
           />
           <AntiDrag>전체</AntiDrag>
         </ClassLabel>
-        {classes?.map((ele) => (
+        {data?.map((ele) => (
           <ClassLabel key={ele.id} selected={selectedClass === ele.id}>
             <ClassInput
               type="radio"

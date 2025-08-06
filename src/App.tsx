@@ -6,22 +6,11 @@ import Classes from "./layout/Classes";
 import Popup from "./layout/Popup";
 import Login from "./layout/Login";
 import { useUserStore } from "./store/userStore";
-import { useEffect, useState } from "react";
 
 const queryClient = new QueryClient();
 
 function App() {
   const { user } = useUserStore();
-  const [userLocalStorageData, setUserLocalStorageData] = useState();
-
-  // useEffect(() => {
-  //   const storedUser = localStorage.getItem("userId");
-  //   if (storedUser) {
-  //     setUserLocalStorageData(JSON.parse(storedUser));
-  //   }
-  // }, []);
-
-  console.log(userLocalStorageData);
 
   return (
     <QueryClientProvider client={queryClient}>
