@@ -52,11 +52,6 @@ const ClassInput = styled.input`
   display: none;
 `;
 
-//
-// 달력 max width가 정해지면 이쪽도 maxwidth...
-// hover -> 모바일에서는 클릭시 작동하는 이슈
-//
-
 const Classes = () => {
   const { classes, setClasses, setClassId } = useClassesStore();
   const { semester } = useSemesterStore();
