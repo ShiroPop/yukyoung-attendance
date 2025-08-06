@@ -195,12 +195,11 @@ const Calendar = () => {
     }
   };
 
-  const handleDateClick = (dateStr: string) => {
-    if (date === dateStr) {
-      openPopup();
-    } else {
-      setDate(dateStr);
-    }
+  const formatDate = (year: number, month: number, day: number) => {
+    const y = year;
+    const m = String(month + 1).padStart(2, "0"); // month는 0-based
+    const d = String(day).padStart(2, "0");
+    return `${y}-${m}-${d}`;
   };
 
   return (
@@ -231,10 +230,12 @@ const Calendar = () => {
                       <DateInput
                         type="radio"
                         name="date"
-                        value={new Date(year, month, cell.day + 1).toISOString().substring(0, 10)}
-                        onClick={() => {
-                          handleDateClick(new Date(year, month, cell.day + 1).toISOString().substring(0, 10));
+                        checked={date === formatDate(year, month, cell.day)}
+                        value={formatDate(year, month, cell.day)}
+                        onChange={() => {
+                          setDate(formatDate(year, month, cell.day));
                         }}
+                        onClick={() => date === formatDate(year, month, cell.day) && openPopup()}
                       />
                       <Cell $isCurrent={cell.currentMonth}>{cell.day}</Cell>
                     </Label>
