@@ -64,7 +64,6 @@ export const useStudentsQuery = (classId: string) => {
     queryFn: async () => {
       if (classId === "all") {
         const classes = assignedClasses ?? [];
-        console.log(assignedClasses);
 
         const allStudents = await Promise.all(
           classes.map(async (cls) => {
