@@ -10,6 +10,7 @@ import { useAttendanceDatesQuery, useAttendanceQuery, useHolidayQuery, useStuden
 import { useClassesStore } from "../store/classesStore";
 import { useClassStudentsAttendance } from "../hooks/useClassStudentsAttendance";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useUserStore } from "../store/userStore";
 
 type AttendanceInfo = {
   id: string;
@@ -123,6 +124,7 @@ const Popup = () => {
   const { date } = useDateStore();
   const { semester } = useSemesterStore();
   const { classId } = useClassesStore();
+  const { user } = useUserStore();
 
   const { data: students } = useStudentsQuery(classId.id);
   const { data: holidayDates, refetch: holidayRefetch } = useHolidayQuery();
@@ -260,18 +262,20 @@ const Popup = () => {
             </ChildrenList>
           ))}
         </ListWrap>
-        <HolidayButton
-          onClick={() => {
-            if (isHoliday(date)) {
-              deleteHolibtn();
-            } else {
-              handleHoliBtn();
-            }
-          }}
-          $isHoliday={isHoliday(date)}
-        >
-          휴일{isHoliday(date) ? "삭제" : "등록"}
-        </HolidayButton>
+        {user?.role === "admin" && (
+          <HolidayButton
+            onClick={() => {
+              if (isHoliday(date)) {
+                deleteHolibtn();
+              } else {
+                handleHoliBtn();
+              }
+            }}
+            $isHoliday={isHoliday(date)}
+          >
+            휴일{isHoliday(date) ? "삭제" : "등록"}
+          </HolidayButton>
+        )}
       </PopupBox>
     </PopupWrap>
   );
