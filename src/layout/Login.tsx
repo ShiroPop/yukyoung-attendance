@@ -77,7 +77,15 @@ const Login = () => {
     <>
       <Container>
         <Form onSubmit={handleLogin}>
-          <Input type="text" placeholder="아이디를 입력해주세요." onChange={(e) => setUser(e.target.value)} />
+          <Input
+            type="text"
+            lang="en"
+            autoCapitalize="off"
+            name="yukyoungId"
+            autoComplete="yukyoungId"
+            placeholder="아이디를 입력해주세요."
+            onChange={(e) => setUser(e.target.value)}
+          />
           <ErrorMessage $visibility={!!loginError}>{loginError || " "}</ErrorMessage>
           <Button type="submit">로그인</Button>
         </Form>
