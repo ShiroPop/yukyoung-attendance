@@ -33,12 +33,15 @@ export const useAuth = () => {
   }, [resetDate, resetPopup, setUser]);
 
   // 로그아웃 타이머 설정
-  const setLogoutTimer = (ms: number) => {
-    clearTimeout(logoutTimer);
-    logoutTimer = setTimeout(() => {
-      logout();
-    }, ms);
-  };
+  const setLogoutTimer = useCallback(
+    (ms: number) => {
+      clearTimeout(logoutTimer);
+      logoutTimer = setTimeout(() => {
+        logout();
+      }, ms);
+    },
+    [logout]
+  );
 
   // 수동 로그인
   const loginId = async (userId: string) => {
@@ -98,7 +101,7 @@ export const useAuth = () => {
         logout();
       }
     },
-    [logout, setUser]
+    [logout, setUser, setLogoutTimer]
   );
 
   // 앱 로드 시 자동 로그인 시도
