@@ -4,6 +4,7 @@ import { useDateStore } from "../store/dateStore";
 import { usePopupStore } from "../store/popupStore";
 import { useAttendanceDatesQuery, useHolidayQuery } from "../api/useQuery";
 import { useCalendarHeightStore } from "../store/calendarHeightStore";
+import { useAuth } from "../hooks/useAuth";
 
 const CalendarTop = styled.div`
   flex-grow: 1;
@@ -103,6 +104,7 @@ const Calendar = () => {
   const { date, setDate } = useDateStore();
   const { openPopup } = usePopupStore();
   const { setCalendarHeight } = useCalendarHeightStore();
+  const { logout } = useAuth();
 
   const [year, setYear] = useState(new Date().getFullYear());
   const [month, setMonth] = useState(new Date().getMonth());
