@@ -8,7 +8,7 @@ interface UserWithoutId {
   assigned_classes: string[];
 }
 
-const LOGIN_EXPIRATION_MINUTES = 30;
+const LOGIN_EXPIRATION_MINUTES = 1;
 const LOGIN_EXPIRATION_MS = LOGIN_EXPIRATION_MINUTES * 60 * 1000;
 
 let logoutTimer: ReturnType<typeof setTimeout>; // 전역 타이머
