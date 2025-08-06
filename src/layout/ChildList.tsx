@@ -29,6 +29,8 @@ const Name = styled.div<{ $isBody?: boolean }>`
   text-align: ${({ $isBody }) => ($isBody ? "left" : "")};
   color: ${({ $isBody }) => ($isBody ? "#76c078" : "#fff")};
   font-weight: ${({ $isBody }) => ($isBody ? "600" : "400")};
+  word-break: keep-all;
+  white-space: pre-wrap;
 `;
 
 const AttendanceBox = styled.div`
