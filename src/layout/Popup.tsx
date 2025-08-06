@@ -57,12 +57,12 @@ const ChildrenList = styled.div`
   border-bottom: 1px solid #cecece;
 `;
 
-const ToggleSwitch = styled.label<{ state?: number }>`
+const ToggleSwitch = styled.label<{ $state?: number }>`
   position: relative;
   display: inline-block;
   width: 50px;
   height: 26px;
-  background-color: ${({ state }) => (state ? "#cecece" : "#76c078")};
+  background-color: ${({ $state }) => ($state ? "#cecece" : "#76c078")};
   border-radius: 34px;
   transition: background-color 0.2s;
   cursor: pointer;
@@ -249,7 +249,7 @@ const Popup = () => {
           {attendances.map((ele) => (
             <ChildrenList key={ele.id}>
               <div>{ele.name}</div>
-              <ToggleSwitch state={ele.state}>
+              <ToggleSwitch $state={ele.state}>
                 <input
                   type="checkbox"
                   checked={ele.state === 0}
