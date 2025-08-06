@@ -1,6 +1,6 @@
 import { useQueries } from "@tanstack/react-query";
 import { useAttendanceDatesQuery } from "./useQuery";
-import { fetchCollection } from "../utils/firestore";
+import { fetchCollection } from "../utils/fetchCollection";
 import { useSemesterStore } from "../store/semesterStore";
 
 export const useAttendanceQueries = () => {

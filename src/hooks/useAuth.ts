@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { doc, getDoc } from "firebase/firestore";
-import { db } from "../firebase";
+import { prodDb, devDb } from "../firestore";
 import { useUserStore } from "../store/userStore";
 import { useDateStore } from "../store/dateStore";
 import { usePopupStore } from "../store/popupStore";
@@ -9,6 +9,8 @@ interface UserWithoutId {
   role: string;
   assigned_classes: string[];
 }
+
+const db = process.env.NODE_ENV === "production" ? prodDb : devDb;
 
 const LOGIN_EXPIRATION_MINUTES = 20;
 const LOGIN_EXPIRATION_MS = LOGIN_EXPIRATION_MINUTES * 60 * 1000;

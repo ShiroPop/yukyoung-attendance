@@ -1,5 +1,5 @@
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
-import { db } from "../firebase";
+import { prodDb, devDb } from "../firestore";
 
 interface LogData {
   action: "create" | "update" | "delete";
@@ -8,6 +8,8 @@ interface LogData {
   data?: any; // 선택적으로 로그에 포함할 실제 데이터
   performedBy: string;
 }
+
+const db = process.env.NODE_ENV === "production" ? prodDb : devDb;
 
 export const logAction = async ({ action, collection, documentId, data, performedBy }: LogData) => {
   const logRef = doc(db, "action_logs", `${Date.now()}_${collection}_${documentId}`);

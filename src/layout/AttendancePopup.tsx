@@ -4,7 +4,7 @@ import { useSemesterStore } from "../store/semesterStore";
 import { usePopupStore } from "../store/popupStore";
 import { useDateStore } from "../store/dateStore";
 import { deleteDoc, doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
-import { db } from "../firebase";
+import { prodDb, devDb } from "../firestore";
 import { useAttendanceDatesQuery, useAttendanceQuery, useHolidayQuery, useStudentsQuery } from "../api/useQuery";
 import { useClassesStore } from "../store/classesStore";
 import { useClassStudentsAttendance } from "../hooks/useClassStudentsAttendance";
@@ -99,6 +99,8 @@ const ToggleSwitch = styled.label<{ $state?: number }>`
     z-index: -1;
   }
 `;
+
+const db = process.env.NODE_ENV === "production" ? prodDb : devDb;
 
 const HolidayButton = styled.button<{ $isHoliday: boolean }>`
   width: 100%;

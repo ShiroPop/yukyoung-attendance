@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { fetchCollection } from "../utils/firestore";
+import { fetchCollection } from "../utils/fetchCollection";
 import { useDateStore } from "../store/dateStore";
 import { useSemesterStore } from "../store/semesterStore";
 import { useUserStore } from "../store/userStore";
