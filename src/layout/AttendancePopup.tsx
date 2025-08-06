@@ -10,6 +10,7 @@ import { useClassesStore } from "../store/classesStore";
 import { useClassStudentsAttendance } from "../hooks/useClassStudentsAttendance";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useUserStore } from "../store/userStore";
+import { logAction } from "../utils/logAction";
 
 type AttendanceInfo = {
   id: string;
@@ -168,7 +169,25 @@ const AttendancePopup = () => {
 
         // 학생 출석 상태 생성
         await setDoc(studentDocRef, { state: newState, createdAt: serverTimestamp() });
+
+        //로그 기록
+        await logAction({
+          action: "create",
+          collection: "student_attendance",
+          documentId: id,
+          data: newState,
+          performedBy: user?.id ?? "unknown",
+        });
       } else {
+        //로그 기록
+        await logAction({
+          action: "delete",
+          collection: "student_attendance",
+          documentId: id,
+          data: newState,
+          performedBy: user?.id ?? "unknown",
+        });
+
         // 비출석 처리 (출석 문서 삭제)
         await deleteDoc(studentDocRef);
 
