@@ -3,7 +3,7 @@ import "./App.css";
 import Calendar from "./layout/Calendar";
 import ChildList from "./layout/ChildList";
 import Classes from "./layout/Classes";
-import Popup from "./layout/Popup";
+import AttendancePopup from "./layout/AttendancePopup";
 import Login from "./layout/Login";
 import { useUserStore } from "./store/userStore";
 import Logout from "./layout/Logout";
@@ -25,7 +25,7 @@ function App() {
             </div>
             <ChildList />
           </div>
-          <Popup />
+          <AttendancePopup />
         </div>
       ) : (
         <div className="App">
