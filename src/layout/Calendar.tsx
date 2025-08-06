@@ -4,6 +4,8 @@ import { useDateStore } from "../store/dateStore";
 import { usePopupStore } from "../store/popupStore";
 import { useAttendanceDatesQuery, useHolidayQuery } from "../api/useQuery";
 import { useCalendarHeightStore } from "../store/calendarHeightStore";
+import { useAttendanceQueries } from "../api/useAttendanceQueries";
+import { useUserStore } from "../store/userStore";
 
 const CalendarTop = styled.div`
   flex-grow: 1;
@@ -57,6 +59,7 @@ const DateInput = styled.input.attrs({ type: "radio" })`
 `;
 
 const Label = styled.label<{ $hasData?: string }>`
+  position: relative;
   display: inline-block;
   border-radius: 50%;
   text-align: center;
@@ -73,6 +76,11 @@ const Label = styled.label<{ $hasData?: string }>`
   }
 
   input:checked + div {
+    background-color: #76c078;
+    color: #fff;
+  }
+
+  input:checked + div span {
     background-color: #76c078;
     color: #fff;
   }
@@ -97,12 +105,25 @@ const Cell = styled.div<{ $isCurrent: boolean }>`
   cursor: pointer;
 `;
 
+const Small = styled.span`
+  position: absolute;
+  right: -5px;
+  bottom: -1px;
+  width: 20px;
+  height: 20px;
+  border-radius: 99px;
+  font-size: 10px;
+`;
+
 const Calendar = () => {
   const { data: attendanceDates } = useAttendanceDatesQuery();
   const { data: holidayDates } = useHolidayQuery();
+  const attendanceQueries = useAttendanceQueries();
+
   const { date, setDate } = useDateStore();
   const { openPopup } = usePopupStore();
   const { setCalendarHeight } = useCalendarHeightStore();
+  const { user } = useUserStore();
 
   const [year, setYear] = useState(new Date().getFullYear());
   const [month, setMonth] = useState(new Date().getMonth());
@@ -110,6 +131,16 @@ const Calendar = () => {
   const calendarRef = useRef<HTMLDivElement>(null);
 
   const weekDays = ["일", "월", "화", "수", "목", "금", "토"];
+
+  const attendanceMap = useMemo(() => {
+    const map = new Map<string, number>();
+    attendanceQueries.forEach((query) => {
+      if (query.isSuccess && query.data?.dateId) {
+        map.set(query.data.dateId, query.data.data.length);
+      }
+    });
+    return map;
+  }, [attendanceQueries]);
 
   const dateArray = useMemo(() => {
     const firstDay = new Date(year, month, 1).getDay();
@@ -237,7 +268,14 @@ const Calendar = () => {
                         }}
                         onClick={() => date === formatDate(year, month, cell.day) && openPopup()}
                       />
-                      <Cell $isCurrent={cell.currentMonth}>{cell.day}</Cell>
+                      <Cell $isCurrent={cell.currentMonth}>
+                        {cell.day}
+                        {user?.role === "admin" && attendanceMap.get(formatDate(year, month, cell.day)) ? (
+                          <Small>{attendanceMap.get(formatDate(year, month, cell.day))}</Small>
+                        ) : (
+                          <></>
+                        )}
+                      </Cell>
                     </Label>
                   ) : (
                     <Cell $isCurrent={cell.currentMonth}>{cell.day}</Cell>

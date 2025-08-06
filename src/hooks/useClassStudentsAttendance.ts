@@ -1,7 +1,7 @@
-import { useQueries, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useAttendanceDatesQuery, useStudentsQuery } from "../api/useQuery";
-import { fetchCollection } from "../utils/firestore";
 import { useSemesterStore } from "../store/semesterStore";
+import { useAttendanceQueries } from "../api/useAttendanceQueries";
 
 type Student = {
   id: string;
@@ -44,13 +44,7 @@ export const useClassStudentsAttendance = (classId?: string) => {
   const { data: students = [] } = useStudentsQuery(classId ?? "");
   const { data: attendanceDates = [] } = useAttendanceDatesQuery();
 
-  const attendanceQueries = useQueries({
-    queries: (attendanceDates ?? []).map((date) => ({
-      queryKey: ["attendance", semester, date.id],
-      queryFn: () => fetchCollection(["semester", semester!, "attendance", date.id, "student_attendance"]),
-      enabled: !!semester && !!date.id,
-    })),
-  });
+  const attendanceQueries = useAttendanceQueries();
 
   const isReady =
     !!semester && !!classId && students.length > 0 && attendanceQueries.every((q) => q.isSuccess || q.isFetched);
@@ -73,7 +67,7 @@ export const useClassStudentsAttendance = (classId?: string) => {
       const weekday = getWeekdayName(attendanceDates[index]?.id);
       if (!weekday || !query.data) return;
 
-      query.data.forEach((record: any) => {
+      query.data.data.forEach((record: any) => {
         const student = studentMap.get(record.id);
         if (student && record.state === 0) {
           student[weekday]! += 1;

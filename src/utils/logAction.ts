@@ -10,7 +10,7 @@ interface LogData {
 }
 
 export const logAction = async ({ action, collection, documentId, data, performedBy }: LogData) => {
-  const logRef = doc(db, "action_logs", `${collection}_${documentId}_${Date.now()}`);
+  const logRef = doc(db, "action_logs", `${Date.now()}_${collection}_${documentId}`);
 
   await setDoc(logRef, {
     action,
