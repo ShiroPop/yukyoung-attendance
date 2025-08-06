@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { useUserStore } from "../store/userStore";
@@ -23,14 +23,14 @@ export const useAuth = () => {
   const { resetPopup } = usePopupStore();
 
   // 로그아웃
-  const logout = () => {
+  const logout = useCallback(() => {
     resetDate();
     resetPopup();
     clearTimeout(logoutTimer);
     setUser(null);
     localStorage.removeItem("userId");
     localStorage.removeItem("loginTime");
-  };
+  }, [resetDate, resetPopup, setUser]);
 
   // 로그아웃 타이머 설정
   const setLogoutTimer = (ms: number) => {
@@ -70,33 +70,36 @@ export const useAuth = () => {
   };
 
   // 자동 로그인
-  const autoLogin = async (userId: string, loginTime: number) => {
-    try {
-      const docRef = doc(db, "user", userId);
-      const snapshot = await getDoc(docRef);
+  const autoLogin = useCallback(
+    async (userId: string, loginTime: number) => {
+      try {
+        const docRef = doc(db, "user", userId);
+        const snapshot = await getDoc(docRef);
 
-      if (!snapshot.exists()) {
+        if (!snapshot.exists()) {
+          logout();
+          return;
+        }
+
+        const userData = snapshot.data() as UserWithoutId;
+        setUser({ id: userId, ...userData });
+
+        const now = Date.now();
+        const elapsed = now - loginTime;
+        const remaining = LOGIN_EXPIRATION_MS - elapsed;
+
+        if (remaining > 0) {
+          setLogoutTimer(remaining);
+        } else {
+          logout();
+        }
+      } catch (error) {
+        console.error("자동 로그인 에러:", error);
         logout();
-        return;
       }
-
-      const userData = snapshot.data() as UserWithoutId;
-      setUser({ id: userId, ...userData });
-
-      const now = Date.now();
-      const elapsed = now - loginTime;
-      const remaining = LOGIN_EXPIRATION_MS - elapsed;
-
-      if (remaining > 0) {
-        setLogoutTimer(remaining);
-      } else {
-        logout(); // 30분 초과
-      }
-    } catch (error) {
-      console.error("자동 로그인 에러:", error);
-      logout();
-    }
-  };
+    },
+    [logout, setUser]
+  );
 
   // 앱 로드 시 자동 로그인 시도
   useEffect(() => {
