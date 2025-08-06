@@ -107,7 +107,7 @@ export const useAuth = () => {
       const loginTime = parseInt(loginTimeStr, 10);
       autoLogin(savedUserId, loginTime);
     }
-  }, []);
+  }, [autoLogin]);
 
   // 앱 포커스 복귀 시 만료 검사
   useEffect(() => {
@@ -130,7 +130,7 @@ export const useAuth = () => {
     return () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, []);
+  }, [logout]);
 
   return {
     loginId,
