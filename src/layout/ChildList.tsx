@@ -24,11 +24,11 @@ const HeadContent = styled.div`
   padding: 8px 30px;
 `;
 
-const Name = styled.div<{ isBody?: boolean }>`
+const Name = styled.div<{ $isBody?: boolean }>`
   width: 100%;
-  text-align: ${({ isBody }) => (isBody ? "left" : "")};
-  color: ${({ isBody }) => (isBody ? "#76c078" : "#fff")};
-  font-weight: ${({ isBody }) => (isBody ? "600" : "400")};
+  text-align: ${({ $isBody }) => ($isBody ? "left" : "")};
+  color: ${({ $isBody }) => ($isBody ? "#76c078" : "#fff")};
+  font-weight: ${({ $isBody }) => ($isBody ? "600" : "400")};
 `;
 
 const AttendanceBox = styled.div`
@@ -91,7 +91,7 @@ const ChildList = () => {
         {student.map((ele) => (
           <Children key={ele.id}>
             <ChildrenContent>
-              <Name isBody={true}>{ele.name}</Name>
+              <Name $isBody={true}>{ele.name}</Name>
               <AttendanceBox>
                 <Attendance color="#76c078">{ele.monday}</Attendance>
                 <Attendance color="#76c078">{ele.tuesday}</Attendance>
