@@ -1,8 +1,5 @@
-// src/utils/firestore.ts
-import { prodDb, devDb } from "../firestore";
 import { collection, getDocs, query, QueryConstraint } from "firebase/firestore";
-
-const db = process.env.NODE_ENV === "production" ? prodDb : devDb;
+import { db } from "../firestore";
 
 export async function fetchCollection(
   pathSegments: [string, ...string[]],

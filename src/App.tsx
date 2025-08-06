@@ -12,7 +12,6 @@ const queryClient = new QueryClient();
 
 function App() {
   const { user } = useUserStore();
-
   return (
     <QueryClientProvider client={queryClient}>
       {user?.role ? (
