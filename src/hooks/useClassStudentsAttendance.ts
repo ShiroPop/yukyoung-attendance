@@ -64,7 +64,6 @@ export const useClassStudentsAttendance = (classId?: string) => {
     });
 
     attendanceQueries.forEach((query, index) => {
-      console.log(query.data);
       const weekday = getWeekdayName(attendanceDates[index]?.id);
       if (!weekday || !query.data) return;
 
