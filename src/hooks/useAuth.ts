@@ -4,6 +4,7 @@ import { useUserStore } from "../store/userStore";
 import { useDateStore } from "../store/dateStore";
 import { usePopupStore } from "../store/popupStore";
 import { db } from "../firestore";
+import { useClassesStore } from "../store/classesStore";
 
 interface UserWithoutId {
   role: string;
@@ -20,12 +21,14 @@ export const useAuth = () => {
 
   const { setUser, setLoginError } = useUserStore();
   const { resetDate } = useDateStore();
-  const { resetPopup, closePopup } = usePopupStore();
+  const { resetPopup } = usePopupStore();
+  const { setClassId } = useClassesStore();
 
   // 로그아웃
   const logout = useCallback(() => {
     resetDate();
     resetPopup();
+    setClassId({ id: "all" });
     clearTimeout(logoutTimer);
     setUser(null);
     localStorage.removeItem("userId");
@@ -127,7 +130,6 @@ export const useAuth = () => {
         const elapsedMinutes = (now - loginTime) / (1000 * 60);
 
         if (elapsedMinutes >= LOGIN_EXPIRATION_MINUTES) {
-          closePopup();
           logout(); // 시간 초과 시 로그아웃
         }
       }
