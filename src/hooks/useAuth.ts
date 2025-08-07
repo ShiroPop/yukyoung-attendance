@@ -20,7 +20,7 @@ export const useAuth = () => {
 
   const { setUser, setLoginError } = useUserStore();
   const { resetDate } = useDateStore();
-  const { resetPopup } = usePopupStore();
+  const { resetPopup, closePopup } = usePopupStore();
 
   // 로그아웃
   const logout = useCallback(() => {
@@ -127,6 +127,7 @@ export const useAuth = () => {
         const elapsedMinutes = (now - loginTime) / (1000 * 60);
 
         if (elapsedMinutes >= LOGIN_EXPIRATION_MINUTES) {
+          closePopup();
           logout(); // 시간 초과 시 로그아웃
         }
       }

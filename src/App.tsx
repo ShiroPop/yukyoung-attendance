@@ -24,13 +24,13 @@ function App() {
             </div>
             <ChildList />
           </div>
-          <AttendancePopup />
         </div>
       ) : (
         <div className="App">
           <Login />
         </div>
       )}
+      <AttendancePopup />
     </QueryClientProvider>
   );
 }

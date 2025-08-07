@@ -34,6 +34,8 @@ const PopupWrap = styled.div<{ $isPopup: boolean }>`
 
 const PopupBox = styled.div`
   width: 80%;
+  min-width: 200px;
+  max-width: 400px;
   height: 60%;
   border: 1px solid #cecece;
   border-radius: 16px;
