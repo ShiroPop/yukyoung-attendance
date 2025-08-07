@@ -160,6 +160,10 @@ const AttendancePopup = () => {
       const dateDocRef = doc(db, "semester", semester!, "attendance", date!);
       const studentDocRef = doc(db, "semester", semester!, "attendance", date!, "student_attendance", id);
 
+      // 해당 학생의 classId 찾기
+      const student = students?.find((s) => s.id === id);
+      const studentClassId = student?.classId ?? "unknown";
+
       if (newState === 0) {
         // 날짜 문서가 없으면 생성
         const dateDocSnap = await getDoc(dateDocRef);
@@ -168,7 +172,7 @@ const AttendancePopup = () => {
         }
 
         // 학생 출석 상태 생성
-        await setDoc(studentDocRef, { state: newState, createdAt: serverTimestamp() });
+        await setDoc(studentDocRef, { state: newState, created_at: serverTimestamp(), class_id: studentClassId });
 
         //로그 기록
         await logAction({
