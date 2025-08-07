@@ -16,6 +16,9 @@
       "hosting": {
         "prod": [
           "yukyoung-attendance-ac519"
+        ],
+        "dev": [
+          "yukyoung-attendance-ac519"
         ]
       }
     }
