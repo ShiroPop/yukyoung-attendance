@@ -220,6 +220,7 @@ const AttendancePopup = () => {
 
   const handleToggle = async (id: string, newState: number) => {
     setAttendances((prev) => prev.map((att) => (att.id === id ? { ...att, state: newState } : att)));
+
     mutation.mutate({ id, newState });
   };
 

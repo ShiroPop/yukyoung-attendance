@@ -2,10 +2,11 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import styled from "styled-components";
 import { useDateStore } from "../store/dateStore";
 import { usePopupStore } from "../store/popupStore";
-import { useAttendanceDatesQuery, useHolidayQuery } from "../api/useQuery";
+import { useHolidayQuery } from "../api/useQuery";
 import { useCalendarHeightStore } from "../store/calendarHeightStore";
 import { useAttendanceQueries } from "../api/useAttendanceQueries";
 import { useUserStore } from "../store/userStore";
+import { useClassesStore } from "../store/classesStore";
 
 const CalendarTop = styled.div`
   flex-grow: 1;
@@ -117,7 +118,6 @@ const Small = styled.span<{ $hasData?: string }>`
 `;
 
 const Calendar = () => {
-  const { data: attendanceDates } = useAttendanceDatesQuery();
   const { data: holidayDates } = useHolidayQuery();
   const attendanceQueries = useAttendanceQueries();
 
@@ -125,6 +125,7 @@ const Calendar = () => {
   const { openPopup } = usePopupStore();
   const { setCalendarHeight } = useCalendarHeightStore();
   const { user } = useUserStore();
+  const { classId } = useClassesStore();
 
   const [year, setYear] = useState(new Date().getFullYear());
   const [month, setMonth] = useState(new Date().getMonth());
@@ -200,7 +201,24 @@ const Calendar = () => {
     const paddedDay = String(day).padStart(2, "0");
     const dateStr = `${year}-${paddedMonth}-${paddedDay}`;
 
-    const isAttendance = attendanceDates?.some((d) => d.id === dateStr) ?? false;
+    let isAttendance = false;
+
+    if (classId.id === "all") {
+      isAttendance = attendanceQueries.some((query) => query.data?.dateId === dateStr && query.data?.data?.length > 0);
+    } else {
+      const attendanceForDateList = attendanceQueries.filter((query) =>
+        query.data?.data.some((q) => q.class_id === classId.id)
+      );
+
+      isAttendance =
+        attendanceForDateList.some(
+          (query) =>
+            query.data?.dateId === dateStr &&
+            query.data?.data?.length > 0 &&
+            query.data?.data?.some((record: { class_id: string }) => user?.assigned_classes.includes(record.class_id))
+        ) ?? false;
+    }
+
     const isHoliday = holidayDates?.some((d) => d.id === dateStr) ?? false;
 
     if (isAttendance && isHoliday) return "#FFB37D";
