@@ -33,7 +33,7 @@ export const useAuth = () => {
     setUser(null);
     localStorage.removeItem("userId");
     localStorage.removeItem("loginTime");
-  }, [resetDate, resetPopup, setUser]);
+  }, [resetDate, resetPopup, setUser, setClassId]);
 
   // 로그아웃 타이머 설정
   const setLogoutTimer = useCallback(
