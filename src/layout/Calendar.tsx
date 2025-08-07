@@ -149,23 +149,26 @@ const Calendar = () => {
     const daysInCurrentMonth = new Date(year, month + 1, 0).getDate();
     const daysInPreviousMonth = new Date(year, month, 0).getDate();
 
-    const prevMonthDates = Array.from({ length: firstDay }, (_, i) => ({
-      day: daysInPreviousMonth - firstDay + i + 1,
-      currentMonth: false,
-    }));
+    const prevMonthDates = Array.from({ length: firstDay }, (_, i) => {
+      const day = daysInPreviousMonth - firstDay + i + 1;
+      const date = new Date(year, month - 1, day);
+      return { day, currentMonth: false, weekday: date.getDay() };
+    });
 
-    const currentMonthDates = Array.from({ length: daysInCurrentMonth }, (_, i) => ({
-      day: i + 1,
-      currentMonth: true,
-    }));
+    const currentMonthDates = Array.from({ length: daysInCurrentMonth }, (_, i) => {
+      const day = i + 1;
+      const date = new Date(year, month, day);
+      return { day, currentMonth: true, weekday: date.getDay() };
+    });
 
     const allDates = [...prevMonthDates, ...currentMonthDates];
     const nextDaysCount = (7 - (allDates.length % 7)) % 7;
 
-    const nextMonthDates = Array.from({ length: nextDaysCount }, (_, i) => ({
-      day: i + 1,
-      currentMonth: false,
-    }));
+    const nextMonthDates = Array.from({ length: nextDaysCount }, (_, i) => {
+      const day = i + 1;
+      const date = new Date(year, month + 1, day);
+      return { day, currentMonth: false, weekday: date.getDay() };
+    });
 
     const fullDates = [...allDates, ...nextMonthDates];
 
@@ -196,7 +199,8 @@ const Calendar = () => {
     };
   }, [setCalendarHeight]);
 
-  const getAttendanceColor = (day: number): string => {
+  const getAttendanceColor = (day: number, weekday: number, isCurrentMonth: boolean): string => {
+    if (!isCurrentMonth) return "#E2E2E2";
     const paddedMonth = String(month + 1).padStart(2, "0");
     const paddedDay = String(day).padStart(2, "0");
     const dateStr = `${year}-${paddedMonth}-${paddedDay}`;
@@ -221,6 +225,9 @@ const Calendar = () => {
 
     const isHoliday = holidayDates?.some((d) => d.id === dateStr) ?? false;
 
+    const isWeekend = weekday === 0 || weekday === 6;
+
+    if (isWeekend) return "#FF9696";
     if (isAttendance && isHoliday) return "#FFB37D";
     if (isAttendance) return "none";
     if (isHoliday) return "#FF9696";
@@ -276,7 +283,9 @@ const Calendar = () => {
               {week.map((cell, idx) => (
                 <TablePadding key={`${i}` + idx}>
                   {cell.currentMonth ? (
-                    <Label $hasData={cell.currentMonth && getAttendanceColor(cell.day)}>
+                    <Label
+                      $hasData={cell.currentMonth && getAttendanceColor(cell.day, cell.weekday, cell.currentMonth)}
+                    >
                       <DateInput
                         type="radio"
                         name="date"
@@ -286,11 +295,16 @@ const Calendar = () => {
                           setDate(formatDate(year, month, cell.day));
                         }}
                         onClick={() => date === formatDate(year, month, cell.day) && openPopup()}
+                        disabled={cell.weekday === 0 || cell.weekday === 6}
                       />
                       <Cell $isCurrent={cell.currentMonth}>
                         {cell.day}
                         {user?.role === "admin" && attendanceMap.get(formatDate(year, month, cell.day)) ? (
-                          <Small $hasData={cell.currentMonth && getAttendanceColor(cell.day)}>
+                          <Small
+                            $hasData={
+                              cell.currentMonth && getAttendanceColor(cell.day, cell.weekday, cell.currentMonth)
+                            }
+                          >
                             {attendanceMap.get(formatDate(year, month, cell.day))}
                           </Small>
                         ) : (
