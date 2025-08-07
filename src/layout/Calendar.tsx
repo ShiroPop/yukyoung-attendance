@@ -105,7 +105,7 @@ const Cell = styled.div<{ $isCurrent: boolean }>`
   cursor: pointer;
 `;
 
-const Small = styled.span`
+const Small = styled.span<{ $hasData?: string }>`
   position: absolute;
   right: -5px;
   bottom: -1px;
@@ -113,6 +113,7 @@ const Small = styled.span`
   height: 20px;
   border-radius: 99px;
   font-size: 10px;
+  background-color: ${({ $hasData }) => $hasData};
 `;
 
 const Calendar = () => {
@@ -271,7 +272,9 @@ const Calendar = () => {
                       <Cell $isCurrent={cell.currentMonth}>
                         {cell.day}
                         {user?.role === "admin" && attendanceMap.get(formatDate(year, month, cell.day)) ? (
-                          <Small>{attendanceMap.get(formatDate(year, month, cell.day))}</Small>
+                          <Small $hasData={cell.currentMonth && getAttendanceColor(cell.day)}>
+                            {attendanceMap.get(formatDate(year, month, cell.day))}
+                          </Small>
                         ) : (
                           <></>
                         )}
