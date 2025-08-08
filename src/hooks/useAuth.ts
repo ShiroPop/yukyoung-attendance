@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import { useUserStore } from "../store/userStore";
 import { useDateStore } from "../store/dateStore";
-import { useModalStore } from "../store/ModalStore";
+import { useModalStore } from "../store/modalStore";
 import { db } from "../firestore";
 import { useClassesStore } from "../store/classesStore";
 
