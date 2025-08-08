@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { useClassesStore } from "../store/classesStore";
 import styled from "styled-components";
-import { useClassesQuery } from "../api/useQuery";
+import { useClassesQuery } from "../hooks/useQuery";
 
 const ScrollContainer = styled.div`
   display: flex;

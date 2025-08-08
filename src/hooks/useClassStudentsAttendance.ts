@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import { useAttendanceDatesQuery, useStudentsQuery } from "../api/useQuery";
 import { useSemesterStore } from "../store/semesterStore";
-import { useAttendanceQueries } from "../api/useAttendanceQueries";
+import { useAttendanceDatesQuery, useStudentsQuery } from "./useQuery";
+import { useAttendanceQueries } from "./useAttendanceQueries";
 
 type Student = {
   id: string;

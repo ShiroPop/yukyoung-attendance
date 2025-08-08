@@ -2,9 +2,9 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import styled from "styled-components";
 import { useDateStore } from "../store/dateStore";
 import { useModalStore } from "../store/modalStore";
-import { useHolidayQuery } from "../api/useQuery";
+import { useHolidayQuery } from "../hooks/useQuery";
 import { useCalendarHeightStore } from "../store/calendarHeightStore";
-import { useAttendanceQueries } from "../api/useAttendanceQueries";
+import { useAttendanceQueries } from "../hooks/useAttendanceQueries";
 import { useUserStore } from "../store/userStore";
 import { useClassesStore } from "../store/classesStore";
 

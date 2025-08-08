@@ -3,7 +3,7 @@ import "./App.css";
 import Calendar from "./layout/Calendar";
 import ChildList from "./layout/ChildList";
 import Classes from "./layout/Classes";
-import AttendanceModal from "./layout/AttendanceModal";
+import AttendanceModal from "./components/Modal/AttendanceModal";
 import Login from "./layout/Login";
 import { useUserStore } from "./store/userStore";
 import Logout from "./layout/Logout";

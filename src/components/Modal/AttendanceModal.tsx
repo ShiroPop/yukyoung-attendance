@@ -4,7 +4,7 @@ import { useModalStore } from "../../store/modalStore";
 import { useDateStore } from "../../store/dateStore";
 import { useClassesStore } from "../../store/classesStore";
 import { useUserStore } from "../../store/userStore";
-import { useStudentsQuery, useHolidayQuery, useAttendanceQuery, useAttendanceDatesQuery } from "../../api/useQuery";
+import { useAttendanceDatesQuery, useAttendanceQuery, useHolidayQuery, useStudentsQuery } from "../../hooks/useQuery";
 import { useClassStudentsAttendance } from "../../hooks/useClassStudentsAttendance";
 import { useAttendanceMutation } from "../../hooks/useAttendanceMutation";
 import { useHolidayMutation } from "../../hooks/useHolidayMutation";
