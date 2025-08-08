@@ -4,8 +4,7 @@ import { useModalStore } from "../../store/modalStore";
 import { useSelectedDateStore } from "../../store/selectedDateStore";
 import { useClassesStore } from "../../store/classesStore";
 import { useUserStore } from "../../store/userStore";
-import { useAttendanceDatesQuery, useAttendanceQuery, useHolidayQuery, useStudentsQuery } from "../../hooks/useQuery";
-import { useClassStudentsAttendance } from "../../hooks/useClassStudentsAttendance";
+import { useAttendanceQuery, useHolidayQuery } from "../../hooks/useQuery";
 import { useAttendanceMutation } from "../../hooks/useAttendanceMutation";
 import { useHolidayMutation } from "../../hooks/useHolidayMutation";
 import { isHoliday } from "../../utils/dateUtils";
@@ -14,6 +13,7 @@ import { ModalWrap, ModalBox, ListWrap, LogoutIcon } from "./AttendanceModal.sty
 
 import AttendanceList from "./AttendanceList";
 import HolidayButton from "./HolidayButton";
+import { useMergedClassMembers } from "../../hooks/useClassesMember";
 
 export type AttendanceInfo = {
   id: string;
@@ -28,34 +28,18 @@ const AttendanceModal = () => {
   const { classId } = useClassesStore();
   const { user } = useUserStore();
 
-  const { data: students } = useStudentsQuery(classId.id);
   const { data: holidayDates, refetch: holidayRefetch } = useHolidayQuery();
   const { data: attendanceRecords = [] } = useAttendanceQuery();
 
+  const { mergedByClass } = useMergedClassMembers(classId.id);
+
   const [attendances, setAttendances] = useState<AttendanceInfo[]>([]);
 
-  const { refetch: attendanceDatesRefetch } = useAttendanceDatesQuery();
-  const { refetch: classStudentsAttendanceRefetch } = useClassStudentsAttendance(classId.id);
+  const classMember = Object.values(mergedByClass).flat();
 
-  const attendanceMutation = useAttendanceMutation({
-    students,
-    attendanceRecords,
-    semester,
-    selectedDate,
-    user,
-    classId,
-    attendanceDatesRefetch,
-    classStudentsAttendanceRefetch,
-  });
+  const attendanceMutation = useAttendanceMutation();
 
-  const { registerHoliday, deleteHoliday } = useHolidayMutation({
-    selectedDate,
-    semester,
-    classId,
-    attendanceDatesRefetch,
-    classStudentsAttendanceRefetch,
-    holidayRefetch,
-  });
+  const { registerHoliday, deleteHoliday } = useHolidayMutation();
 
   const handleToggle = (id: string, newState: number) => {
     setAttendances((prev) => prev.map((att) => (att.id === id ? { ...att, state: newState } : att)));
@@ -63,21 +47,21 @@ const AttendanceModal = () => {
   };
 
   useEffect(() => {
-    if (!selectedDate || !semester || !students || students.length === 0 || !attendanceRecords) return;
+    if (!selectedDate || !semester || !classMember || classMember.length === 0 || !attendanceRecords) return;
 
     const attendanceMap = new Map<string, number>();
     attendanceRecords.forEach((record: { id: string; state: number }) => {
       attendanceMap.set(record.id, record.state);
     });
 
-    const result: AttendanceInfo[] = students.map((stu) => ({
+    const result: AttendanceInfo[] = classMember.map((stu) => ({
       id: stu.id,
       name: stu.name,
       state: attendanceMap.get(stu.id) ?? 1,
     }));
 
     setAttendances(result);
-  }, [attendanceRecords, students, selectedDate, semester]);
+  }, [attendanceRecords, classId, selectedDate, semester]);
 
   return (
     <ModalWrap $isModal={isModal} onClick={closeModal}>

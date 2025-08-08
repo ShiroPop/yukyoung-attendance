@@ -7,11 +7,6 @@ interface NormalizedStudent {
   id: string;
   name: string;
   classId: string;
-  monday: number;
-  tuesday: number;
-  wednesday: number;
-  thursday: number;
-  friday: number;
 }
 
 const normalizeStudent = (stu: any, classId: string) => ({
@@ -20,7 +15,7 @@ const normalizeStudent = (stu: any, classId: string) => ({
   classId: stu.class || classId,
 });
 
-export const useAssignedClassesStudents = () => {
+export const useClassesStudents = () => {
   const { semester } = useSemesterStore();
   const { data: assignedClasses } = useClassesQuery();
 
@@ -46,11 +41,12 @@ export const useAssignedClassesStudents = () => {
   }, {} as Record<string, NormalizedStudent[]>);
 
   // 전체 학생 리스트
-  // const allStudents = Object.values(studentsByClass).flat();
+  const allStudents = Object.values(studentsByClass).flat();
 
   return {
     isLoading,
     isError,
     studentsByClass,
+    allStudents,
   };
 };

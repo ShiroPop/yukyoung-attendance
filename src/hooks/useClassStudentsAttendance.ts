@@ -1,7 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { useSemesterStore } from "../store/semesterStore";
-import { useAttendanceDatesQuery, useStudentsQuery } from "./useQuery";
+import { useAttendanceDatesQuery } from "./useQuery";
 import { useAttendanceQueries } from "./useAttendanceQueries";
+import { useMergedClassMembers } from "./useClassesMember";
 
 type Student = {
   id: string;
@@ -41,18 +42,19 @@ function getWeekdayName(dateString: string): keyof WeeklyAttendanceSummary | nul
 
 export const useClassStudentsAttendance = (classId?: string) => {
   const { semester } = useSemesterStore();
-  const { data: students = [] } = useStudentsQuery(classId ?? "");
   const { data: attendanceDates = [] } = useAttendanceDatesQuery();
 
   const attendanceQueries = useAttendanceQueries();
+  const { mergedByClass } = useMergedClassMembers(classId);
+  const classMember = Object.values(mergedByClass).flat();
 
   const isReady =
-    !!semester && !!classId && students.length > 0 && attendanceQueries.every((q) => q.isSuccess || q.isFetched);
+    !!semester && !!classId && classMember.length > 0 && attendanceQueries.every((q) => q.isSuccess || q.isFetched);
 
   const getData = () => {
     const studentMap = new Map<string, StudentAttendanceInfo>();
 
-    students.forEach((stu) => {
+    classMember.forEach((stu) => {
       studentMap.set(stu.id, {
         ...stu,
         monday: 0,
