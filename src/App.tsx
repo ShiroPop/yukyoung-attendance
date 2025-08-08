@@ -7,6 +7,7 @@ import AttendanceModal from "./layout/AttendanceModal";
 import Login from "./layout/Login";
 import { useUserStore } from "./store/userStore";
 import Logout from "./layout/Logout";
+import CalendarGuide from "./layout/CalendarGuide";
 
 const queryClient = new QueryClient();
 
@@ -20,6 +21,7 @@ function App() {
             <div>
               <Logout />
               <Calendar />
+              <CalendarGuide />
               <Classes />
             </div>
             <ChildList />
