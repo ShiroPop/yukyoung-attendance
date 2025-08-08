@@ -46,8 +46,8 @@ const Attendance = styled.span<{ color?: string }>`
 const ListWrapper = styled.div<{ $calendarHeight: number }>`
   overflow-y: auto;
   overflow-x: hidden;
-  height: calc(100dvh - 140px - ${({ $calendarHeight }) => $calendarHeight}px);
-  height: calc(100vh - 140px - ${({ $calendarHeight }) => $calendarHeight}px);
+  height: calc(100dvh - 145px - ${({ $calendarHeight }) => $calendarHeight}px);
+  height: calc(100vh - 145px - ${({ $calendarHeight }) => $calendarHeight}px);
 
   @media (min-width: 910px) {
     height: calc(100dvh - 40px);
