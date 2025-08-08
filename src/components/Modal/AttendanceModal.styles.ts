@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { ReactComponent as CloseIconRaw } from "../../assets/close.svg";
 
 export const ModalWrap = styled.div<{ $isModal: boolean }>`
   position: absolute;
@@ -25,10 +26,24 @@ export const ModalBox = styled.div`
   margin-bottom: 30px;
   background-color: white;
   overflow: hidden;
+  text-align: right;
+`;
+
+export const LogoutIcon = styled(CloseIconRaw)`
+  width: 24px;
+  height: 24px;
+  padding: 0 0 4px;
+  fill: #00000030;
+  cursor: pointer;
+  transition: fill 0.5s;
+
+  &:hover {
+    fill: #000000;
+  }
 `;
 
 export const ListWrap = styled.div`
-  height: 82%;
+  height: 80%;
   overflow-y: auto;
   overflow-x: hidden;
 `;

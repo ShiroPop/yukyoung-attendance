@@ -10,7 +10,7 @@ import { useAttendanceMutation } from "../../hooks/useAttendanceMutation";
 import { useHolidayMutation } from "../../hooks/useHolidayMutation";
 import { isHoliday } from "../../utils/dateUtils";
 
-import { ModalWrap, ModalBox, ListWrap } from "./AttendanceModal.styles";
+import { ModalWrap, ModalBox, ListWrap, LogoutIcon } from "./AttendanceModal.styles";
 
 import AttendanceList from "./AttendanceList";
 import HolidayButton from "./HolidayButton";
@@ -82,6 +82,7 @@ const AttendanceModal = () => {
   return (
     <ModalWrap $isModal={isModal} onClick={closeModal}>
       <ModalBox onClick={(e) => e.stopPropagation()}>
+        <LogoutIcon onClick={closeModal} />
         <ListWrap>
           <AttendanceList attendances={attendances} onToggle={handleToggle} />
         </ListWrap>
