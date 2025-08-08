@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import styled from "styled-components";
 import { useDateStore } from "../store/dateStore";
-import { usePopupStore } from "../store/popupStore";
+import { useModalStore } from "../store/modalStore";
 import { useHolidayQuery } from "../api/useQuery";
 import { useCalendarHeightStore } from "../store/calendarHeightStore";
 import { useAttendanceQueries } from "../api/useAttendanceQueries";
@@ -122,7 +122,7 @@ const Calendar = () => {
   const attendanceQueries = useAttendanceQueries();
 
   const { date, setDate } = useDateStore();
-  const { openPopup } = usePopupStore();
+  const { openModal } = useModalStore();
   const { setCalendarHeight } = useCalendarHeightStore();
   const { user } = useUserStore();
   const { classId } = useClassesStore();
@@ -294,7 +294,7 @@ const Calendar = () => {
                         onChange={() => {
                           setDate(formatDate(year, month, cell.day));
                         }}
-                        onClick={() => date === formatDate(year, month, cell.day) && openPopup()}
+                        onClick={() => date === formatDate(year, month, cell.day) && openModal()}
                         disabled={cell.weekday === 0 || cell.weekday === 6}
                       />
                       <Cell $isCurrent={cell.currentMonth}>

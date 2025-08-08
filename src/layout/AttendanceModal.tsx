@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { useEffect, useState } from "react";
 import { useSemesterStore } from "../store/semesterStore";
-import { usePopupStore } from "../store/popupStore";
+import { useModalStore } from "../store/modalStore";
 import { useDateStore } from "../store/dateStore";
 import { deleteDoc, doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 import { db } from "../firestore";
@@ -18,9 +18,9 @@ type AttendanceInfo = {
   state: number;
 };
 
-const PopupWrap = styled.div<{ $isPopup: boolean }>`
+const ModalWrap = styled.div<{ $isModal: boolean }>`
   position: absolute;
-  display: ${({ $isPopup }) => ($isPopup ? "flex" : "none")};
+  display: ${({ $isModal }) => ($isModal ? "flex" : "none")};
   justify-content: center;
   align-items: center;
   width: 100vw;
@@ -32,7 +32,7 @@ const PopupWrap = styled.div<{ $isPopup: boolean }>`
   overflow: hidden;
 `;
 
-const PopupBox = styled.div`
+const ModalBox = styled.div`
   width: 80%;
   min-width: 200px;
   max-width: 400px;
@@ -121,8 +121,8 @@ const HolidayButton = styled.button<{ $isHoliday: boolean }>`
   }
 `;
 
-const AttendancePopup = () => {
-  const { isPopup, closePopup } = usePopupStore();
+const AttendanceModal = () => {
+  const { isModal, closeModal } = useModalStore();
   const { date } = useDateStore();
   const { semester } = useSemesterStore();
   const { classId } = useClassesStore();
@@ -275,8 +275,8 @@ const AttendancePopup = () => {
   };
 
   return (
-    <PopupWrap $isPopup={isPopup} onClick={closePopup}>
-      <PopupBox onClick={(e) => e.stopPropagation()}>
+    <ModalWrap $isModal={isModal} onClick={closeModal}>
+      <ModalBox onClick={(e) => e.stopPropagation()}>
         <ListWrap>
           {attendances.map((ele) => (
             <ChildrenList key={ele.id}>
@@ -306,9 +306,9 @@ const AttendancePopup = () => {
             휴일{isHoliday(date) ? "삭제" : "등록"}
           </HolidayButton>
         )}
-      </PopupBox>
-    </PopupWrap>
+      </ModalBox>
+    </ModalWrap>
   );
 };
 
-export default AttendancePopup;
+export default AttendanceModal;
