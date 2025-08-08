@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSemesterStore } from "../../store/semesterStore";
 import { useModalStore } from "../../store/modalStore";
-import { useDateStore } from "../../store/dateStore";
+import { useSelectedDateStore } from "../../store/selectedDateStore";
 import { useClassesStore } from "../../store/classesStore";
 import { useUserStore } from "../../store/userStore";
 import { useAttendanceDatesQuery, useAttendanceQuery, useHolidayQuery, useStudentsQuery } from "../../hooks/useQuery";
@@ -23,7 +23,7 @@ export type AttendanceInfo = {
 
 const AttendanceModal = () => {
   const { isModal, closeModal } = useModalStore();
-  const { date } = useDateStore();
+  const { selectedDate } = useSelectedDateStore();
   const { semester } = useSemesterStore();
   const { classId } = useClassesStore();
   const { user } = useUserStore();
@@ -41,7 +41,7 @@ const AttendanceModal = () => {
     students,
     attendanceRecords,
     semester,
-    date,
+    selectedDate,
     user,
     classId,
     attendanceDatesRefetch,
@@ -49,7 +49,7 @@ const AttendanceModal = () => {
   });
 
   const { registerHoliday, deleteHoliday } = useHolidayMutation({
-    date,
+    selectedDate,
     semester,
     classId,
     attendanceDatesRefetch,
@@ -63,7 +63,7 @@ const AttendanceModal = () => {
   };
 
   useEffect(() => {
-    if (!date || !semester || !students || students.length === 0 || !attendanceRecords) return;
+    if (!selectedDate || !semester || !students || students.length === 0 || !attendanceRecords) return;
 
     const attendanceMap = new Map<string, number>();
     attendanceRecords.forEach((record: { id: string; state: number }) => {
@@ -77,7 +77,7 @@ const AttendanceModal = () => {
     }));
 
     setAttendances(result);
-  }, [attendanceRecords, students, date, semester]);
+  }, [attendanceRecords, students, selectedDate, semester]);
 
   return (
     <ModalWrap $isModal={isModal} onClick={closeModal}>
@@ -88,8 +88,8 @@ const AttendanceModal = () => {
 
         {user?.role === "admin" && (
           <HolidayButton
-            isHoliday={isHoliday(date, holidayDates)}
-            onClick={() => (isHoliday(date, holidayDates) ? deleteHoliday() : registerHoliday())}
+            isHoliday={isHoliday(selectedDate, holidayDates)}
+            onClick={() => (isHoliday(selectedDate, holidayDates) ? deleteHoliday() : registerHoliday())}
           />
         )}
       </ModalBox>

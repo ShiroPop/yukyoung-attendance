@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import { useUserStore } from "../store/userStore";
-import { useDateStore } from "../store/dateStore";
+import { useSelectedDateStore } from "../store/selectedDateStore";
 import { useModalStore } from "../store/modalStore";
 import { db } from "../firestore";
 import { useClassesStore } from "../store/classesStore";
@@ -20,20 +20,20 @@ export const useAuth = () => {
   const [loading, setLoading] = useState(false);
 
   const { setUser, setLoginError } = useUserStore();
-  const { resetDate } = useDateStore();
+  const { resetSelectedDate } = useSelectedDateStore();
   const { resetModal } = useModalStore();
   const { setClassId } = useClassesStore();
 
   // 로그아웃
   const logout = useCallback(() => {
-    resetDate();
+    resetSelectedDate();
     resetModal();
     setClassId({ id: "all" });
     clearTimeout(logoutTimer);
     setUser(null);
     localStorage.removeItem("userId");
     localStorage.removeItem("loginTime");
-  }, [resetDate, resetModal, setUser, setClassId]);
+  }, [resetSelectedDate, resetModal, setUser, setClassId]);
 
   // 로그아웃 타이머 설정
   const setLogoutTimer = useCallback(

@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { fetchCollection } from "../utils/fetchCollection";
-import { useDateStore } from "../store/dateStore";
+import { useSelectedDateStore } from "../store/selectedDateStore";
 import { useSemesterStore } from "../store/semesterStore";
 import { useUserStore } from "../store/userStore";
 
@@ -17,11 +17,11 @@ export const useHolidayQuery = () => {
 
 export const useAttendanceQuery = () => {
   const { semester } = useSemesterStore();
-  const { date } = useDateStore();
+  const { selectedDate } = useSelectedDateStore();
 
   return useQuery({
-    queryKey: ["semester", semester, "attendance", date, "student_attendance"],
-    queryFn: () => fetchCollection(["semester", semester, "attendance", date, "student_attendance"]),
+    queryKey: ["semester", semester, "attendance", selectedDate, "student_attendance"],
+    queryFn: () => fetchCollection(["semester", semester, "attendance", selectedDate, "student_attendance"]),
   });
 };
 
