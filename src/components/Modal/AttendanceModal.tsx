@@ -49,10 +49,16 @@ const AttendanceModal = () => {
   };
 
   const prevMergedRef = useRef<MergedByClass>([]);
+  const prevAttendanceRecords = useRef<MergedByClass>([]);
 
   useEffect(() => {
-    if (JSON.stringify(prevMergedRef.current) !== JSON.stringify(mergedByClass)) {
+    const isMergedByClassChanged = JSON.stringify(prevMergedRef.current) !== JSON.stringify(mergedByClass);
+    const isAttendanceRecordsChanged =
+      JSON.stringify(prevAttendanceRecords.current) !== JSON.stringify(attendanceRecords);
+    if (isMergedByClassChanged || isAttendanceRecordsChanged) {
       prevMergedRef.current = mergedByClass;
+      prevAttendanceRecords.current = attendanceRecords;
+
       if (!selectedDate || !semester || !classMember || classMember.length === 0 || !attendanceRecords) return;
 
       const attendanceMap = new Map<string, number>();
