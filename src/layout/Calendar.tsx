@@ -1,10 +1,17 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useCalendarHeightStore } from "../store/calendarHeightStore";
 import CalendarHeader from "../components/Calendar/CalendarHeader";
 import CalendarTable from "../components/Calendar/CalendarTable";
+import styled from "styled-components";
+
+const CalendarWrapper = styled.div<{ $isShrunk: boolean }>`
+  overflow: hidden;
+  max-height: ${({ $isShrunk }) => ($isShrunk ? "100px" : "500px")};
+  transition: max-height 0.5s ease;
+`;
 
 const Calendar = () => {
-  const { setCalendarHeight } = useCalendarHeightStore();
+  const { setCalendarHeight, isChildListShrunk } = useCalendarHeightStore();
 
   const calendarRef = useRef<HTMLDivElement>(null);
 
@@ -28,10 +35,10 @@ const Calendar = () => {
   }, [setCalendarHeight]);
 
   return (
-    <div ref={calendarRef}>
+    <CalendarWrapper ref={calendarRef} $isShrunk={isChildListShrunk}>
       <CalendarHeader />
       <CalendarTable />
-    </div>
+    </CalendarWrapper>
   );
 };
 

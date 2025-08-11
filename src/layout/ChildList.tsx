@@ -72,13 +72,13 @@ const ChildrenContent = styled.div`
 
 const ChildList = () => {
   const { classId } = useClassesStore();
-  const { calendarHeight } = useCalendarHeightStore();
+  const { calendarHeight, isChildListShrunk, openChildList, closeChildList } = useCalendarHeightStore();
 
   const { data: student = [] } = useClassStudentsAttendance(classId.id);
 
   return (
     <ChildListWrapper>
-      <Head>
+      <Head onClick={isChildListShrunk ? closeChildList : openChildList}>
         <HeadContent>
           <Name>이름</Name>
           <AttendanceBox>
