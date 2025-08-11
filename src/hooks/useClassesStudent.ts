@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { useQueries } from "@tanstack/react-query";
 import { fetchCollection } from "../utils/fetchCollection";
 import { useClassesQuery } from "./useQuery";
@@ -39,21 +40,22 @@ export const useClassesStudents = () => {
   const isError = queries.some((q) => q.isError);
 
   // 반별로 구분된 형태로 리턴
-  const studentsByClass = (assignedClasses ?? []).reduce((acc, cls, idx) => {
-    acc[cls.id] = queries[idx]?.data ?? [];
-    return acc;
-  }, {} as Record<string, NormalizedStudent[]>);
+  const studentsByClass = useMemo(() => {
+    return (assignedClasses ?? []).reduce((acc, cls, idx) => {
+      acc[cls.id] = queries[idx]?.data ?? [];
+      return acc;
+    }, {} as Record<string, NormalizedStudent[]>);
+  }, [assignedClasses, queries.map((q) => q.data)]);
 
-  // 전체 학생 리스트
-  const allStudents = Object.values(studentsByClass).flat();
+  // 모든 학생 리스트
+  const allStudents = useMemo(() => Object.values(studentsByClass).flat(), [studentsByClass]);
 
-  // 선택한 반 리스트
-  const selectedClassStudents =
-    classId.id === "all"
-      ? Object.values(studentsByClass).flat()
-      : Array.isArray(classId.id)
-      ? classId.id.flatMap((id) => studentsByClass[id] ?? [])
-      : studentsByClass[classId.id] ?? [];
+  // 선택한 반 학생 리스트
+  const selectedClassStudents = useMemo(() => {
+    if (classId.id === "all") return allStudents;
+    if (Array.isArray(classId.id)) return classId.id.flatMap((id) => studentsByClass[id] ?? []);
+    return studentsByClass[classId.id] ?? [];
+  }, [classId.id, allStudents, studentsByClass]);
 
   return {
     isLoading,

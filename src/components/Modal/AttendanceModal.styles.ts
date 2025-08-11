@@ -16,6 +16,8 @@ export const ModalWrap = styled.div<{ $isModal: boolean }>`
 `;
 
 export const ModalBox = styled.div`
+  display: flex;
+  flex-direction: column;
   width: 80%;
   min-width: 200px;
   max-width: 400px;
@@ -43,7 +45,7 @@ export const LogoutIcon = styled(CloseIconRaw)`
 `;
 
 export const ListWrap = styled.div`
-  height: 80%;
+  flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
 `;

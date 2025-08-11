@@ -67,10 +67,12 @@ const Button = styled.button`
 const Login = () => {
   const { loginId } = useAuth();
   const { loginError } = useUserStore();
+
   const [user, setUser] = useState("");
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     await loginId(user);
   };
   return (

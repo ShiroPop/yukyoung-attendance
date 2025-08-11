@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { useQueries } from "@tanstack/react-query";
 import { fetchCollection } from "../utils/fetchCollection";
 import { useClassesQuery } from "./useQuery";
@@ -10,10 +11,10 @@ interface NormalizedTeacher {
   role: string;
 }
 
-const normalizeTeacher = (stu: any, classId: string) => ({
-  id: stu.id,
-  name: stu.name,
-  classId: stu.class || classId,
+const normalizeTeacher = (tch: any, classId: string) => ({
+  id: tch.id,
+  name: tch.name,
+  classId: tch.class || classId,
   role: "teacher",
 });
 
@@ -23,10 +24,10 @@ export const useClassesTeacher = () => {
 
   const queries = useQueries({
     queries: (assignedClasses ?? []).map((cls) => ({
-      queryKey: ["teacher", semester, cls.id],
+      queryKey: ["teachers", semester, cls.id],
       queryFn: async () => {
         const teachers = await fetchCollection(["semester", semester, "class", cls.id, "teacher"]);
-        return teachers.map((teacher) => normalizeTeacher(teacher, cls.id));
+        return teachers.map((tch) => normalizeTeacher(tch, cls.id));
       },
       enabled: !!semester,
       staleTime: 1000 * 60 * 5,
@@ -37,18 +38,16 @@ export const useClassesTeacher = () => {
   const isError = queries.some((q) => q.isError);
 
   // 반별로 구분된 형태로 리턴
-  const teachersByClass = (assignedClasses ?? []).reduce((acc, cls, idx) => {
-    acc[cls.id] = queries[idx]?.data ?? [];
-    return acc;
-  }, {} as Record<string, NormalizedTeacher[]>);
-
-  // 전체 학생 리스트
-  const allTeacher = Object.values(teachersByClass).flat();
+  const teachersByClass = useMemo(() => {
+    return (assignedClasses ?? []).reduce((acc, cls, idx) => {
+      acc[cls.id] = queries[idx]?.data ?? [];
+      return acc;
+    }, {} as Record<string, NormalizedTeacher[]>);
+  }, [assignedClasses, queries.map((q) => q.data)]);
 
   return {
     isLoading,
     isError,
     teachersByClass,
-    allTeacher,
   };
 };

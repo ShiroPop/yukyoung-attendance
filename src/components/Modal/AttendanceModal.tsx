@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSemesterStore } from "../../store/semesterStore";
 import { useModalStore } from "../../store/modalStore";
 import { useSelectedDateStore } from "../../store/selectedDateStore";
@@ -21,6 +21,8 @@ export type AttendanceInfo = {
   state: number;
 };
 
+interface MergedByClass {}
+
 const AttendanceModal = () => {
   const { isModal, closeModal } = useModalStore();
   const { selectedDate } = useSelectedDateStore();
@@ -28,7 +30,7 @@ const AttendanceModal = () => {
   const { classId } = useClassesStore();
   const { user } = useUserStore();
 
-  const { data: holidayDates, refetch: holidayRefetch } = useHolidayQuery();
+  const { data: holidayDates } = useHolidayQuery();
   const { data: attendanceRecords = [] } = useAttendanceQuery();
 
   const { mergedByClass } = useMergedClassMembers(classId.id);
@@ -46,22 +48,27 @@ const AttendanceModal = () => {
     attendanceMutation.mutate({ id, newState });
   };
 
+  const prevMergedRef = useRef<MergedByClass>([]);
+
   useEffect(() => {
-    if (!selectedDate || !semester || !classMember || classMember.length === 0 || !attendanceRecords) return;
+    if (JSON.stringify(prevMergedRef.current) !== JSON.stringify(mergedByClass)) {
+      prevMergedRef.current = mergedByClass;
+      if (!selectedDate || !semester || !classMember || classMember.length === 0 || !attendanceRecords) return;
 
-    const attendanceMap = new Map<string, number>();
-    attendanceRecords.forEach((record: { id: string; state: number }) => {
-      attendanceMap.set(record.id, record.state);
-    });
+      const attendanceMap = new Map<string, number>();
+      attendanceRecords.forEach((record: { id: string; state: number }) => {
+        attendanceMap.set(record.id, record.state);
+      });
 
-    const result: AttendanceInfo[] = classMember.map((stu) => ({
-      id: stu.id,
-      name: stu.name,
-      state: attendanceMap.get(stu.id) ?? 1,
-    }));
+      const result: AttendanceInfo[] = classMember.map((stu) => ({
+        id: stu.id,
+        name: stu.name,
+        state: attendanceMap.get(stu.id) ?? 1,
+      }));
 
-    setAttendances(result);
-  }, [attendanceRecords, classId, selectedDate, semester]);
+      setAttendances(result);
+    }
+  }, [mergedByClass, attendanceRecords, classId, selectedDate, semester]);
 
   return (
     <ModalWrap $isModal={isModal} onClick={closeModal}>

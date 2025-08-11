@@ -34,11 +34,12 @@ export const useMergedClassMembers = (classId: ClassIdFilter = "all"): { mergedB
 
     for (const className of classNames) {
       if (studentsByClass.hasOwnProperty(className) && teachersByClass.hasOwnProperty(className)) {
-        result[className] = [...teachersByClass[className], ...studentsByClass[className]];
+        result[className] = [...(teachersByClass[className] ?? []), ...(studentsByClass[className] ?? [])];
       }
     }
 
     return result;
   }, [classId, studentsByClass, teachersByClass]);
+
   return { mergedByClass };
 };
