@@ -2,6 +2,8 @@ import { useQueries } from "@tanstack/react-query";
 import { fetchCollection } from "../utils/fetchCollection";
 import { useClassesQuery } from "./useQuery";
 import { useSemesterStore } from "../store/semesterStore";
+import { useClassesStore } from "../store/classesStore";
+import { useUserStore } from "../store/userStore";
 
 interface NormalizedStudent {
   id: string;
@@ -18,6 +20,8 @@ const normalizeStudent = (stu: any, classId: string) => ({
 export const useClassesStudents = () => {
   const { semester } = useSemesterStore();
   const { data: assignedClasses } = useClassesQuery();
+  const { classId } = useClassesStore();
+  const { user } = useUserStore();
 
   const queries = useQueries({
     queries: (assignedClasses ?? []).map((cls) => ({
@@ -43,10 +47,19 @@ export const useClassesStudents = () => {
   // 전체 학생 리스트
   const allStudents = Object.values(studentsByClass).flat();
 
+  // 선택한 반 리스트
+  const selectedClassStudents =
+    classId.id === "all"
+      ? Object.values(studentsByClass).flat()
+      : Array.isArray(classId.id)
+      ? classId.id.flatMap((id) => studentsByClass[id] ?? [])
+      : studentsByClass[classId.id] ?? [];
+
   return {
     isLoading,
     isError,
     studentsByClass,
     allStudents,
+    selectedClassStudents,
   };
 };

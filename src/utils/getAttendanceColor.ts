@@ -52,7 +52,11 @@ export const getAttendanceColor = ({
   let hasAttendance = false;
 
   if (classId.id === "all") {
-    hasAttendance = attendanceQueries.some((query) => query.data?.dateId === dateStr && query.data?.data?.length > 0);
+    hasAttendance = attendanceQueries.some(
+      (query) =>
+        query.data?.dateId === dateStr &&
+        query.data?.data?.some((record) => user?.assigned_classes.includes(record.class_id))
+    );
   } else {
     const attendanceForClass = attendanceQueries.filter((query) =>
       query.data?.data.some((student) => student.class_id === classId.id)

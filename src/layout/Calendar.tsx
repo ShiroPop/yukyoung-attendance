@@ -1,13 +1,6 @@
-import { useEffect, useRef, useState } from "react";
-import styled from "styled-components";
+import { useEffect, useRef } from "react";
 import { useCalendarHeightStore } from "../store/calendarHeightStore";
-import { useAttendanceQueries } from "../hooks/useAttendanceQueries";
-import { formatDate } from "../utils/formatDate";
-import { useCalendarMatrix } from "../hooks/useCalendarMatrix";
-import CalendarCell from "../components/Calendar/CalendarCell";
-import { useAttendanceMap } from "../hooks/useAttendanceMap";
 import CalendarHeader from "../components/Calendar/CalendarHeader";
-import { useCalendarDateStore } from "../store/calendarDate";
 import CalendarTable from "../components/Calendar/CalendarTable";
 
 const Calendar = () => {
