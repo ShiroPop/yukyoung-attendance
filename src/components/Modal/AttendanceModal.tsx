@@ -73,8 +73,10 @@ const AttendanceModal = () => {
       }));
 
       setAttendances(result);
+
+      console.log("sia");
     }
-  }, [mergedByClass, attendanceRecords, classId, selectedDate, semester]);
+  }, [mergedByClass, attendanceRecords, classMember, classId, selectedDate, semester]);
 
   return (
     <ModalWrap $isModal={isModal} onClick={closeModal}>
