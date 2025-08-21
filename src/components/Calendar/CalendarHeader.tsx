@@ -1,4 +1,3 @@
-// src/components/Calendar/CalendarHeader.tsx
 import styled from "styled-components";
 import { useCalendarDateStore } from "../../store/calendarDate";
 

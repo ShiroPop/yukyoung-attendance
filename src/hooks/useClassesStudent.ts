@@ -22,7 +22,6 @@ export const useClassesStudents = () => {
   const { semester } = useSemesterStore();
   const { data: assignedClasses } = useClassesQuery();
   const { classId } = useClassesStore();
-  const { user } = useUserStore();
 
   const queries = useQueries({
     queries: (assignedClasses ?? []).map((cls) => ({
@@ -39,13 +38,15 @@ export const useClassesStudents = () => {
   const isLoading = queries.some((q) => q.isLoading);
   const isError = queries.some((q) => q.isError);
 
+  const queryDataArray = useMemo(() => queries.map((q) => q.data), [queries]);
+
   // 반별로 구분된 형태로 리턴
   const studentsByClass = useMemo(() => {
     return (assignedClasses ?? []).reduce((acc, cls, idx) => {
-      acc[cls.id] = queries[idx]?.data ?? [];
+      acc[cls.id] = queryDataArray[idx] ?? [];
       return acc;
     }, {} as Record<string, NormalizedStudent[]>);
-  }, [assignedClasses, queries.map((q) => q.data)]);
+  }, [assignedClasses, queryDataArray]);
 
   // 모든 학생 리스트
   const allStudents = useMemo(() => Object.values(studentsByClass).flat(), [studentsByClass]);

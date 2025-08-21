@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useCalendarHeightStore } from "../store/calendarHeightStore";
 import CalendarHeader from "../components/Calendar/CalendarHeader";
 import CalendarTable from "../components/Calendar/CalendarTable";

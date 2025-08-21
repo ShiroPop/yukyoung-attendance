@@ -73,8 +73,6 @@ const AttendanceModal = () => {
       }));
 
       setAttendances(result);
-
-      console.log("sia");
     }
   }, [mergedByClass, attendanceRecords, classMember, classId, selectedDate, semester]);
 

@@ -30,5 +30,5 @@ export const useAttendanceMap = (attendanceQueries: UseQueryResult<AttendanceDat
     });
 
     return map;
-  }, [attendanceQueries]);
+  }, [attendanceQueries, selectedClassStudents]);
 };
