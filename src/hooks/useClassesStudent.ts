@@ -4,7 +4,6 @@ import { fetchCollection } from "../utils/fetchCollection";
 import { useClassesQuery } from "./useQuery";
 import { useSemesterStore } from "../store/semesterStore";
 import { useClassesStore } from "../store/classesStore";
-import { useUserStore } from "../store/userStore";
 
 interface NormalizedStudent {
   id: string;
