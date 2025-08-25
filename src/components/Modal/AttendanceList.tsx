@@ -1,3 +1,4 @@
+import Toast from "../Toast";
 import { AttendanceInfo } from "./AttendanceModal";
 import { ChildrenList } from "./AttendanceModal.styles";
 import ToggleSwitch from "./ToggleSwitch";
@@ -16,6 +17,7 @@ const AttendanceList = ({ attendances, onToggle }: Props) => {
           <ToggleSwitch checked={ele.state === 0} onChange={() => onToggle(ele.id, Number(!ele.state))} />
         </ChildrenList>
       ))}
+      <Toast />
     </>
   );
 };

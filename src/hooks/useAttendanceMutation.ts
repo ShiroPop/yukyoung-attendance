@@ -9,6 +9,7 @@ import { useSelectedDateStore } from "../store/selectedDateStore";
 import { useUserStore } from "../store/userStore";
 import { useAttendanceDatesQuery, useAttendanceQuery } from "./useQuery";
 import { useClassStudentsAttendance } from "./useClassStudentsAttendance";
+import { useToastStore } from "../store/toastStore";
 
 export const useAttendanceMutation = () => {
   const queryClient = useQueryClient();
@@ -24,6 +25,8 @@ export const useAttendanceMutation = () => {
 
   const { mergedByClass } = useMergedClassMembers(classId.id);
   const classMember = Object.values(mergedByClass).flat();
+
+  const { show } = useToastStore();
 
   return useMutation({
     mutationFn: async ({ id, newState }: { id: string; newState: number }) => {
@@ -68,15 +71,23 @@ export const useAttendanceMutation = () => {
         }
       }
     },
-    onSuccess: async () => {
+    onSuccess: async (_data, variables) => {
+      const { id, newState } = variables;
+      const student = classMember?.find((s: any) => s.id === id);
+      const studentName = student?.name ?? "알 수 없음";
+
+      await queryClient.invalidateQueries({ queryKey: ["semester", semester, "attendance"] });
       await queryClient.invalidateQueries({ queryKey: ["attendance", semester, selectedDate] });
       await queryClient.invalidateQueries({ queryKey: ["class-students-attendance", semester, classId] });
+
+      show(`${studentName}의 출석 상태가 ${newState === 0 ? "출석" : "결석"}으로 변경되었습니다.`, "success");
 
       attendanceDatesRefetch();
       classStudentsAttendanceRefetch();
     },
     onError: (err) => {
       console.error("출석 상태 업데이트 실패:", err);
+      show(`출석 상태 업데이트 실패: ${err}`, "error");
     },
   });
 };
