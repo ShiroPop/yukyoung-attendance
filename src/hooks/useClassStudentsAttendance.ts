@@ -46,44 +46,40 @@ export const useClassStudentsAttendance = (classId?: string) => {
 
   const attendanceQueries = useAttendanceQueries();
   const { mergedByClass } = useMergedClassMembers(classId);
+
   const classMember = Object.values(mergedByClass).flat();
 
-  const isReady =
-    !!semester && !!classId && classMember.length > 0 && attendanceQueries.every((q) => q.isSuccess || q.isFetched);
-
-  const getData = () => {
-    const studentMap = new Map<string, StudentAttendanceInfo>();
-
-    classMember.forEach((stu) => {
-      studentMap.set(stu.id, {
-        ...stu,
-        monday: 0,
-        tuesday: 0,
-        wednesday: 0,
-        thursday: 0,
-        friday: 0,
-      });
-    });
-
-    attendanceQueries.forEach((query, index) => {
-      const weekday = getWeekdayName(attendanceDates[index]?.id);
-      if (!weekday || !query.data) return;
-
-      query.data.data.forEach((record: any) => {
-        const student = studentMap.get(record.id);
-        if (student && record.state === 0) {
-          student[weekday]! += 1;
-        }
-      });
-    });
-
-    return Array.from(studentMap.values());
-  };
-
   const mainQuery = useQuery<StudentAttendanceInfo[]>({
-    queryKey: ["class-students-attendance", semester, classId],
-    enabled: isReady,
-    queryFn: () => getData(),
+    queryKey: ["class-students-attendance", semester, classId, attendanceDates, attendanceQueries.map((q) => q.data)],
+    enabled: !!semester && !!classId && classMember.length > 0,
+    queryFn: () => {
+      const studentMap = new Map<string, StudentAttendanceInfo>();
+
+      classMember.forEach((stu) => {
+        studentMap.set(stu.id, {
+          ...stu,
+          monday: 0,
+          tuesday: 0,
+          wednesday: 0,
+          thursday: 0,
+          friday: 0,
+        });
+      });
+
+      attendanceQueries.forEach((query, index) => {
+        const weekday = getWeekdayName(attendanceDates[index]?.id);
+        if (!weekday || !query.data) return;
+
+        query.data.data.forEach((record: any) => {
+          const student = studentMap.get(record.id);
+          if (student && record.state === 0) {
+            student[weekday]! += 1;
+          }
+        });
+      });
+
+      return Array.from(studentMap.values());
+    },
   });
 
   const refetchAll = async () => {
