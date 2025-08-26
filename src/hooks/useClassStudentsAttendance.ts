@@ -9,6 +9,7 @@ type Student = {
   name: string;
   classId: string;
   state?: number;
+  role?: string;
 };
 
 type WeeklyAttendanceSummary = {

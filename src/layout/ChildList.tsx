@@ -28,7 +28,6 @@ const Name = styled.div<{ $isBody?: boolean }>`
   width: 100%;
   text-align: ${({ $isBody }) => ($isBody ? "left" : "")};
   color: ${({ $isBody }) => ($isBody ? "#76c078" : "#fff")};
-  font-weight: ${({ $isBody }) => ($isBody ? "600" : "400")};
   word-break: keep-all;
   white-space: pre-wrap;
 `;
@@ -58,7 +57,6 @@ const ListWrapper = styled.div<{ $calendarHeight: number }>`
 
 const Children = styled.div`
   width: 100%;
-  border-bottom: 1px solid #cecece;
 `;
 
 const ChildrenContent = styled.div`
@@ -76,6 +74,29 @@ const ChildList = () => {
 
   const { data: student = [] } = useClassStudentsAttendance(classId.id);
 
+  const getBorderStyle = (index: number) => {
+    const ele = student[index];
+    const prev = index > 0 ? student[index - 1] : undefined;
+    const next = index < student.length - 1 ? student[index + 1] : undefined;
+
+    const isTeacher = ele.role === "teacher";
+    const prevIsTeacher = prev?.role === "teacher";
+    const nextIsTeacher = next?.role === "teacher";
+
+    if (isTeacher) {
+      return {
+        borderTop: prevIsTeacher ? "1px solid #bbb" : "1px solid #bbb",
+        borderBottom: nextIsTeacher ? "none" : "1px solid #bbb",
+        fontWeight: isTeacher ? "600" : "400",
+      } as React.CSSProperties;
+    }
+
+    return {
+      fontWeight: isTeacher ? "600" : "400",
+      borderBottom: nextIsTeacher ? "none" : "1px dashed #cecece",
+    } as React.CSSProperties;
+  };
+
   return (
     <ChildListWrapper>
       <Head onClick={isChildListShrunk ? closeChildList : openChildList}>
@@ -91,8 +112,8 @@ const ChildList = () => {
         </HeadContent>
       </Head>
       <ListWrapper $calendarHeight={calendarHeight}>
-        {student.map((ele) => (
-          <Children key={ele.id}>
+        {student.map((ele, index) => (
+          <Children key={ele.id} style={getBorderStyle(index)}>
             <ChildrenContent>
               <Name $isBody={true}>{ele.name}</Name>
               <AttendanceBox>

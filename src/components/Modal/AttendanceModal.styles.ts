@@ -56,7 +56,6 @@ export const ChildrenList = styled.div`
   justify-items: center;
   grid-template-columns: 2fr 1fr;
   padding: 12px 30px;
-  border-bottom: 1px solid #cecece;
 `;
 
 export const StyledToggleSwitch = styled.label<{ $state?: number }>`
