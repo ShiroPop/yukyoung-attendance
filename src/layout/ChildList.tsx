@@ -1,7 +1,10 @@
+import { useState } from "react";
 import styled from "styled-components";
 import { useClassesStore } from "../store/classesStore";
 import { useClassStudentsAttendance } from "../hooks/useClassStudentsAttendance";
 import { useCalendarHeightStore } from "../store/calendarHeightStore";
+import { useUserStore } from "../store/userStore";
+import { useStudentMutation } from "../hooks/useStudentMutation";
 
 const ChildListWrapper = styled.div`
   flex-shrink: 0;
@@ -10,6 +13,7 @@ const ChildListWrapper = styled.div`
 `;
 
 const Head = styled.div`
+  position: relative;
   width: 100%;
   background-color: #76c078;
   color: #fff;
@@ -59,20 +63,101 @@ const Children = styled.div`
   width: 100%;
 `;
 
-const ChildrenContent = styled.div`
+const ChildrenContent = styled.div<{ $isEditMode?: boolean }>`
   display: grid;
   justify-items: end;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: ${({ $isEditMode }) =>
+    $isEditMode ? "auto 2fr 1fr" : "2fr 1fr"};
+  align-items: center;
   max-width: 600px;
   margin: 0 auto;
   padding: 12px 30px;
 `;
 
+const EditButton = styled.button<{ $active?: boolean }>`
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: ${({ $active }) => ($active ? "#FFD700" : "#fff")};
+  font-size: 13px;
+  cursor: pointer;
+  padding: 2px 8px;
+  white-space: nowrap;
+`;
+
+const DeleteButton = styled.button`
+  background: none;
+  border: none;
+  color: #ff5959;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0 8px 0 0;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      color: #ff9696;
+    }
+  }
+`;
+
+const AddStudentRow = styled.div`
+  display: flex;
+  align-items: center;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 8px 30px;
+  gap: 8px;
+`;
+
+const AddStudentInput = styled.input`
+  flex: 1;
+  border: 1px solid #4caf50;
+  border-radius: 10px;
+  height: 38px;
+  padding: 0 12px;
+  outline: none;
+  color: #76c078;
+  font-size: 14px;
+`;
+
+const AddStudentButton = styled.button`
+  background-color: #76c078;
+  color: #fff;
+  border: none;
+  height: 38px;
+  border-radius: 10px;
+  padding: 6px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  white-space: nowrap;
+  transition: background-color 0.5s;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background-color: #76c0784d;
+    }
+  }
+`;
+
 const ChildList = () => {
   const { classId } = useClassesStore();
-  const { calendarHeight, isChildListShrunk, openChildList, closeChildList } = useCalendarHeightStore();
+  const { user } = useUserStore();
+  const isAdmin = user?.role === "admin";
+  const { calendarHeight, isChildListShrunk, openChildList, closeChildList } =
+    useCalendarHeightStore();
 
   const { data: student = [] } = useClassStudentsAttendance(classId.id);
+
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [newStudentName, setNewStudentName] = useState("");
+
+  const { addStudent, deleteStudent, isAdding } = useStudentMutation();
+
+  const isSpecificClass = classId.id !== "all";
 
   const getBorderStyle = (index: number) => {
     const ele = student[index];
@@ -97,6 +182,29 @@ const ChildList = () => {
     } as React.CSSProperties;
   };
 
+  const handleDeleteStudent = (
+    studentId: string,
+    studentName: string,
+    studentClassId: string,
+  ) => {
+    if (window.confirm(`'${studentName}' 학생을 삭제하시겠습니까?`)) {
+      deleteStudent(studentId, studentClassId);
+    }
+  };
+
+  const handleAddStudent = () => {
+    const trimmed = newStudentName.trim();
+    if (!trimmed) return;
+    addStudent(trimmed, classId.id);
+    setNewStudentName("");
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleAddStudent();
+    }
+  };
+
   return (
     <ChildListWrapper>
       <Head onClick={isChildListShrunk ? closeChildList : openChildList}>
@@ -110,11 +218,31 @@ const ChildList = () => {
             <Attendance>금</Attendance>
           </AttendanceBox>
         </HeadContent>
+        {isAdmin && (
+          <EditButton
+            $active={isEditMode}
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsEditMode((prev) => !prev);
+            }}
+          >
+            수정
+          </EditButton>
+        )}
       </Head>
       <ListWrapper $calendarHeight={calendarHeight}>
         {student.map((ele, index) => (
           <Children key={ele.id} style={getBorderStyle(index)}>
-            <ChildrenContent>
+            <ChildrenContent $isEditMode={isEditMode && isAdmin}>
+              {isEditMode && isAdmin && (
+                <DeleteButton
+                  onClick={() =>
+                    handleDeleteStudent(ele.id, ele.name, ele.classId)
+                  }
+                >
+                  X
+                </DeleteButton>
+              )}
               <Name $isBody={true}>{ele.name}</Name>
               <AttendanceBox>
                 <Attendance color="#76c078">{ele.monday}</Attendance>
@@ -126,6 +254,19 @@ const ChildList = () => {
             </ChildrenContent>
           </Children>
         ))}
+        {isAdmin && isSpecificClass && (
+          <AddStudentRow>
+            <AddStudentInput
+              value={newStudentName}
+              onChange={(e) => setNewStudentName(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="학생 이름"
+            />
+            <AddStudentButton onClick={handleAddStudent} disabled={isAdding}>
+              {isAdding ? "추가 중..." : "추가"}
+            </AddStudentButton>
+          </AddStudentRow>
+        )}
       </ListWrapper>
     </ChildListWrapper>
   );

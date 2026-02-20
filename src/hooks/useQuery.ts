@@ -83,6 +83,13 @@ export const useStudentsQuery = (classId: string) => {
   });
 };
 
+export const useSemesterListQuery = () => {
+  return useQuery({
+    queryKey: ["semester"],
+    queryFn: () => fetchCollection(["semester"]),
+  });
+};
+
 export const useAttendanceDatesQuery = () => {
   const { semester } = useSemesterStore();
 
