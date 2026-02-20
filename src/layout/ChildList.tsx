@@ -76,7 +76,7 @@ const ChildrenContent = styled.div<{ $isEditMode?: boolean }>`
 
 const EditButton = styled.button<{ $active?: boolean }>`
   position: absolute;
-  right: 6px;
+  left: 6px;
   top: 50%;
   transform: translateY(-50%);
   background: none;
