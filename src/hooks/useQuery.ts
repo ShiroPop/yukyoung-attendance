@@ -91,3 +91,20 @@ export const useAttendanceDatesQuery = () => {
     queryFn: async () => fetchCollection(["semester", semester, "attendance"]),
   });
 };
+
+export const useSemesterListQuery = () => {
+  return useQuery({
+    queryKey: ["semester"],
+    queryFn: () => fetchCollection(["semester"]),
+  });
+};
+
+export const useAllClassesQuery = () => {
+  const { semester } = useSemesterStore();
+
+  return useQuery({
+    queryKey: ["semester", semester, "allClasses"],
+    queryFn: () => fetchCollection(["semester", semester, "class"]),
+    enabled: !!semester,
+  });
+};

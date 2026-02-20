@@ -4,10 +4,12 @@ import Calendar from "./layout/Calendar";
 import ChildList from "./layout/ChildList";
 import Classes from "./layout/Classes";
 import AttendanceModal from "./components/Modal/AttendanceModal";
+import ManagementModal from "./components/Management/ManagementModal";
 import Login from "./layout/Login";
 import { useUserStore } from "./store/userStore";
 import Logout from "./layout/Logout";
 import CalendarGuide from "./layout/CalendarGuide";
+import SettingsButton from "./layout/SettingsButton";
 
 const queryClient = new QueryClient();
 
@@ -19,6 +21,7 @@ function App() {
         <div className="App">
           <div className="Wrapper">
             <div>
+              {user.role === "admin" && <SettingsButton />}
               <Logout />
               <Calendar />
               <CalendarGuide />
@@ -33,6 +36,7 @@ function App() {
         </div>
       )}
       <AttendanceModal />
+      {user?.role === "admin" && <ManagementModal />}
     </QueryClientProvider>
   );
 }
