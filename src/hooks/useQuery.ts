@@ -33,10 +33,11 @@ export const useClassesQuery = () => {
     queryKey: ["semester", semester, "class", user?.id],
     queryFn: async () => {
       const allClasses = await fetchCollection(["semester", semester, "class"]);
+      const currentUser = useUserStore.getState().user;
 
-      if (!user || !user.assigned_classes) return [];
+      if (!currentUser || !currentUser.assigned_classes) return [];
 
-      const filtered = allClasses.filter((classItem: ClassId) => user.assigned_classes.includes(classItem.id));
+      const filtered = allClasses.filter((classItem: ClassId) => currentUser.assigned_classes.includes(classItem.id));
 
       return filtered;
     },
