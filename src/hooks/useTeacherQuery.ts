@@ -4,6 +4,7 @@ import { db } from "../firestore";
 
 interface Teacher {
   id: string;
+  name: string;
   role: string;
   assigned_classes: string[];
 }

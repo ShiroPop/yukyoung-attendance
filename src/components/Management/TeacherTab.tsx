@@ -2,12 +2,7 @@ import { useState } from "react";
 import { useTeachersQuery, useTeacherDetailQuery } from "../../hooks/useTeacherQuery";
 import { useTeacherMutation } from "../../hooks/useTeacherMutation";
 import { useAllClassesQuery } from "../../hooks/useQuery";
-import {
-  Select,
-  TabContent,
-  EmptyMessage,
-  CheckboxLabel,
-} from "./ManagementModal.styles";
+import { Select, TabContent, EmptyMessage, CheckboxLabel } from "./ManagementModal.styles";
 
 const TeacherTab = () => {
   const [selectedTeacherId, setSelectedTeacherId] = useState("");
@@ -30,14 +25,11 @@ const TeacherTab = () => {
 
   return (
     <>
-      <Select
-        value={selectedTeacherId}
-        onChange={(e) => setSelectedTeacherId(e.target.value)}
-      >
+      <Select value={selectedTeacherId} onChange={(e) => setSelectedTeacherId(e.target.value)}>
         <option value="">선생님을 선택하세요</option>
         {teachers.map((t) => (
           <option key={t.id} value={t.id}>
-            {t.id}
+            {t.name}
           </option>
         ))}
       </Select>
