@@ -10,6 +10,7 @@ import {
 import SemesterTab from "./SemesterTab";
 import ClassTab from "./ClassTab";
 import StudentTab from "./StudentTab";
+import TeacherTab from "./TeacherTab";
 
 const ManagementModal = () => {
   const { isOpen, activeTab, closeModal, setActiveTab } =
@@ -41,10 +42,17 @@ const ManagementModal = () => {
           >
             학생
           </Tab>
+          <Tab
+            $active={activeTab === "teacher"}
+            onClick={() => setActiveTab("teacher")}
+          >
+            선생님
+          </Tab>
         </TabContainer>
         {activeTab === "semester" && <SemesterTab />}
         {activeTab === "class" && <ClassTab />}
         {activeTab === "student" && <StudentTab />}
+        {activeTab === "teacher" && <TeacherTab />}
       </ModalBox>
     </ModalWrap>
   );

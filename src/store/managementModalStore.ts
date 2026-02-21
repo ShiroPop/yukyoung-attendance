@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-type ManagementTab = "semester" | "class" | "student";
+type ManagementTab = "semester" | "class" | "student" | "teacher";
 
 interface ManagementModalStore {
   isOpen: boolean;
