@@ -4,6 +4,7 @@ import { db } from "../firestore";
 
 interface Teacher {
   id: string;
+  name: string;
   role: string;
   assigned_classes: string[];
 }
@@ -16,6 +17,7 @@ export const useTeachersQuery = () => {
       const snapshot = await getDocs(q);
       return snapshot.docs.map((doc) => ({
         id: doc.id,
+        name: doc.data().name,
         role: doc.data().role,
         assigned_classes: doc.data().assigned_classes ?? [],
       })) as Teacher[];
@@ -33,6 +35,7 @@ export const useTeacherDetailQuery = (teacherId: string) => {
       if (!doc) return null;
       return {
         id: doc.id,
+        name: doc.data().name,
         role: doc.data().role,
         assigned_classes: doc.data().assigned_classes ?? [],
       } as Teacher;
