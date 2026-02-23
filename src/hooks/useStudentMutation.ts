@@ -12,7 +12,7 @@ export const useStudentMutation = () => {
   const addStudent = useMutation({
     mutationFn: async ({ name, classId }: { name: string; classId: string }) => {
       const studentRef = doc(collection(db, "semester", semester, "class", classId, "student"));
-      await setDoc(studentRef, { name });
+      await setDoc(studentRef, { name, classId });
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["students"] });
