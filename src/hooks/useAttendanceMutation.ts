@@ -53,6 +53,7 @@ export const useAttendanceMutation = () => {
           documentId: id,
           data: newState,
           performedBy: user?.id ?? "unknown",
+          targetDate: selectedDate,
         });
       } else {
         await logAction({
@@ -61,6 +62,7 @@ export const useAttendanceMutation = () => {
           documentId: id,
           data: newState,
           performedBy: user?.id ?? "unknown",
+          targetDate: selectedDate,
         });
 
         await deleteDoc(studentDocRef);

@@ -7,9 +7,10 @@ interface LogData {
   documentId: string;
   data?: any; // 선택적으로 로그에 포함할 실제 데이터
   performedBy: string;
+  targetDate?: string; // 수정 대상 날짜 (YYYY-MM-DD)
 }
 
-export const logAction = async ({ action, collection, documentId, data, performedBy }: LogData) => {
+export const logAction = async ({ action, collection, documentId, data, performedBy, targetDate }: LogData) => {
   const logRef = doc(db, "action_logs", `${Date.now()}_${collection}_${documentId}`);
 
   await setDoc(logRef, {
@@ -19,6 +20,7 @@ export const logAction = async ({ action, collection, documentId, data, performe
     data: data ?? null,
     timestamp: serverTimestamp(),
     performedBy: performedBy,
+    ...(targetDate && { targetDate }),
   });
 };
 
