@@ -44,7 +44,7 @@ const AttendanceModal = () => {
   const { registerHoliday, deleteHoliday } = useHolidayMutation();
 
   const handleToggle = (id: string, newState: number) => {
-    setAttendances((prev) => prev.map((att) => (att.id === id ? { ...att, state: newState } : att)));
+    if (attendanceMutation.isPending) return;
     attendanceMutation.mutate({ id, newState });
   };
 
@@ -52,6 +52,8 @@ const AttendanceModal = () => {
   const prevAttendanceRecords = useRef<MergedByClass>([]);
 
   useEffect(() => {
+    if (attendanceMutation.isPending) return;
+
     const isMergedByClassChanged = JSON.stringify(prevMergedRef.current) !== JSON.stringify(mergedByClass);
     const isAttendanceRecordsChanged =
       JSON.stringify(prevAttendanceRecords.current) !== JSON.stringify(attendanceRecords);
@@ -74,7 +76,7 @@ const AttendanceModal = () => {
 
       setAttendances(result);
     }
-  }, [mergedByClass, attendanceRecords, classMember, classId, selectedDate, semester]);
+  }, [mergedByClass, attendanceRecords, classMember, classId, selectedDate, semester, attendanceMutation.isPending]);
 
   return (
     <ModalWrap $isModal={isModal} onClick={closeModal}>

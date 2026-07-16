@@ -37,7 +37,7 @@ const AttendanceList = ({ attendances, onToggle }: Props) => {
       {attendances.map((ele, index) => (
         <ChildrenList key={ele.id} style={getBorderStyle(index)}>
           <div>{ele.name}</div>
-          <ToggleSwitch checked={ele.state === 0} onChange={() => onToggle(ele.id, Number(!ele.state))} />
+          <ToggleSwitch checked={ele.state === 0} onChange={() => onToggle(ele.id, ele.state === 0 ? 1 : 0)} />
         </ChildrenList>
       ))}
       <Toast />
