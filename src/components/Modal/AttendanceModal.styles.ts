@@ -58,7 +58,7 @@ export const ChildrenList = styled.div`
   padding: 12px 30px;
 `;
 
-export const StyledToggleSwitch = styled.label<{ $state?: number; $disabled?: boolean }>`
+export const StyledToggleSwitch = styled.label<{ $state?: number }>`
   position: relative;
   display: inline-block;
   width: 50px;
@@ -66,9 +66,7 @@ export const StyledToggleSwitch = styled.label<{ $state?: number; $disabled?: bo
   background-color: ${({ $state }) => ($state ? "#cecece" : "#76c078")};
   border-radius: 34px;
   transition: background-color 0.2s;
-  cursor: ${({ $disabled }) => ($disabled ? "not-allowed" : "pointer")};
-  opacity: ${({ $disabled }) => ($disabled ? 0.6 : 1)};
-  pointer-events: ${({ $disabled }) => ($disabled ? "none" : "auto")};
+  cursor: pointer;
 
   input {
     display: none;

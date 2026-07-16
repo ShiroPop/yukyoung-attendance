@@ -6,10 +6,9 @@ import ToggleSwitch from "./ToggleSwitch";
 interface Props {
   attendances: AttendanceInfo[];
   onToggle: (id: string, newState: number) => void;
-  isToggleDisabled?: boolean;
 }
 
-const AttendanceList = ({ attendances, onToggle, isToggleDisabled = false }: Props) => {
+const AttendanceList = ({ attendances, onToggle }: Props) => {
   const getBorderStyle = (index: number) => {
     const ele = attendances[index];
     const prev = index > 0 ? attendances[index - 1] : undefined;
@@ -38,11 +37,7 @@ const AttendanceList = ({ attendances, onToggle, isToggleDisabled = false }: Pro
       {attendances.map((ele, index) => (
         <ChildrenList key={ele.id} style={getBorderStyle(index)}>
           <div>{ele.name}</div>
-          <ToggleSwitch
-            checked={ele.state === 0}
-            disabled={isToggleDisabled}
-            onChange={() => onToggle(ele.id, ele.state === 0 ? 1 : 0)}
-          />
+          <ToggleSwitch checked={ele.state === 0} onChange={() => onToggle(ele.id, Number(!ele.state))} />
         </ChildrenList>
       ))}
       <Toast />

@@ -44,7 +44,7 @@ const AttendanceModal = () => {
   const { registerHoliday, deleteHoliday } = useHolidayMutation();
 
   const handleToggle = (id: string, newState: number) => {
-    if (attendanceMutation.isPending) return;
+    setAttendances((prev) => prev.map((att) => (att.id === id ? { ...att, state: newState } : att)));
     attendanceMutation.mutate({ id, newState });
   };
 
@@ -52,8 +52,6 @@ const AttendanceModal = () => {
   const prevAttendanceRecords = useRef<MergedByClass>([]);
 
   useEffect(() => {
-    if (attendanceMutation.isPending) return;
-
     const isMergedByClassChanged = JSON.stringify(prevMergedRef.current) !== JSON.stringify(mergedByClass);
     const isAttendanceRecordsChanged =
       JSON.stringify(prevAttendanceRecords.current) !== JSON.stringify(attendanceRecords);
@@ -76,18 +74,14 @@ const AttendanceModal = () => {
 
       setAttendances(result);
     }
-  }, [mergedByClass, attendanceRecords, classMember, classId, selectedDate, semester, attendanceMutation.isPending]);
+  }, [mergedByClass, attendanceRecords, classMember, classId, selectedDate, semester]);
 
   return (
     <ModalWrap $isModal={isModal} onClick={closeModal}>
       <ModalBox onClick={(e) => e.stopPropagation()}>
         <LogoutIcon onClick={closeModal} />
         <ListWrap>
-          <AttendanceList
-            attendances={attendances}
-            onToggle={handleToggle}
-            isToggleDisabled={attendanceMutation.isPending}
-          />
+          <AttendanceList attendances={attendances} onToggle={handleToggle} />
         </ListWrap>
 
         {user?.role === "admin" && (
